@@ -22,6 +22,7 @@ public class OrdenRecojoController {
 
     @GetMapping("listByConductor/{idConductor}")
     public ResponseEntity<List<OrdenRecojo>> getOrdenesRecojoPorConductor(@PathVariable Integer idConductor) {
+        System.out.println(idConductor);
         List<OrdenRecojo> ordenes = ordenRecojoService.getOrdenesRecojoPorConductor(idConductor);
         return ResponseEntity.ok(ordenes);
     }

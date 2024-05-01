@@ -48,9 +48,21 @@ public class Conductor {
 
     
     public Conductor() {
+
+    }
+    
+    public Conductor(Integer idConductor, @NotNull Usuario usuario, @NotNull Date fechaVencLicencia,
+            @Size(max = 4, message = "clave_digital: maximo 4 caracteres") @NotBlank String claveDigital,
+            @Valid Auditoria auditoria) {
+        this.idConductor = idConductor;
+        this.usuario = usuario;
+        this.fechaVencLicencia = fechaVencLicencia;
+        this.claveDigital = claveDigital;
+        this.auditoria = auditoria;
     }
 
-    
+
+
     public Integer getIdConductor() {
         return idConductor;
     }
@@ -89,13 +101,22 @@ public class Conductor {
         this.auditoria = auditoria;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
     @Override
     public String toString() {
-        return "Conductor [idConductor=" + idConductor + ", fechaVencLicencia=" + fechaVencLicencia + ", claveDigital="
-                + claveDigital + ", auditoria=" + auditoria + "]";
+        return "Conductor [idConductor=" + idConductor + ", usuario=" + usuario + ", fechaVencLicencia="
+                + fechaVencLicencia + ", claveDigital=" + claveDigital + ", auditoria=" + auditoria + "]";
     }
 
+    
     
     
 }
