@@ -7,4 +7,6 @@ import com.sidep.proyect.backend.dto.out.LoginOutDto;
 public interface LoginService {
     
     LoginOutDto loginConductor(LoginInDto inDto);
+
+    LoginOutDto loginRevisor(LoginInDto inDto);
 }
