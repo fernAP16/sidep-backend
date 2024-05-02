@@ -35,7 +35,6 @@ public class ConductorController {
     public ResponseEntity<?> loginConductor(@RequestBody LoginInDto loginDTO)
     {
         LoginOutDto loginResponse = loginService.loginConductor(loginDTO);
-        System.out.println(loginDTO);
         return ResponseEntity.ok(loginResponse);
     }
 }

@@ -5,6 +5,14 @@ public class LoginOutDto {
     String message;
     Boolean status;
     Integer id;
+    String nombres;
+
+    public LoginOutDto(String message, Boolean status, Integer id, String nombres) {
+        this.message = message;
+        this.status = status;
+        this.id = id;
+        this.nombres = nombres;
+    }
 
     public String getMessage() {
         return message;
@@ -24,12 +32,17 @@ public class LoginOutDto {
     public void setId(Integer id) {
         this.id = id;
     }
-    
-
-    public LoginOutDto(String message, Boolean status, Integer id) {
-        this.message = message;
-        this.status = status;
-        this.id = id;
+    public String getNombres() {
+        return nombres;
     }
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+    @Override
+    public String toString() {
+        return "LoginOutDto [message=" + message + ", status=" + status + ", id=" + id + ", nombres=" + nombres + "]";
+    }
+
+    
     
 }

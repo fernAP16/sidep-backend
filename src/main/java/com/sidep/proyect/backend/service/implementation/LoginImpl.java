@@ -36,12 +36,13 @@ public class LoginImpl implements LoginService{
         if(usuarioLogin.isPresent()){
             Optional<Conductor> conductorLogin = conductorRepository.findByClaveDigitalAndUsuario_IdUsuario(loginDTO.getPassword(), usuarioLogin.get().getIdUsuario());
             if (conductorLogin.isPresent()) {
-                return new LoginOutDto("Login Success", true, conductorLogin.get().getIdConductor());
+                String nombres = usuarioLogin.get().getNombres().split(" ")[0] + " " + usuarioLogin.get().getPrimerApellido();
+                return new LoginOutDto("Login Success", true, conductorLogin.get().getIdConductor(), nombres);
             } else {
-                return new LoginOutDto("Login Failed", false, 0);
+                return new LoginOutDto("Login Failed", false, 0, "");
             }
         } else {
-            return new LoginOutDto("Login Failed", false, 0);
+            return new LoginOutDto("Login Failed", false, 0, "");
         }
     }
 
@@ -51,12 +52,13 @@ public class LoginImpl implements LoginService{
         if(usuarioLogin.isPresent()){
             Optional<Revisor> revisorLogin = revisorRepository.findByContrasenaAndUsuario_IdUsuario(loginDTO.getPassword(), usuarioLogin.get().getIdUsuario());
             if (revisorLogin.isPresent()) {
-                return new LoginOutDto("Login Success", true, revisorLogin.get().getIdRevisor());
+                String nombres = usuarioLogin.get().getNombres().split(" ")[0] + " " + usuarioLogin.get().getPrimerApellido();
+                return new LoginOutDto("Login Success", true, revisorLogin.get().getIdRevisor(), nombres);
             } else {
-                return new LoginOutDto("Login Failed", false, 0);
+                return new LoginOutDto("Login Failed", false, 0, "");
             }
         } else {
-            return new LoginOutDto("Login Failed", false, 0);
+            return new LoginOutDto("Login Failed", false, 0, "");
         }
     }
 }
