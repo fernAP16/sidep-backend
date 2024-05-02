@@ -41,25 +41,29 @@ public class Despacho {
 
     @JoinColumn(name = "id_turno_revision")
     @ManyToOne
-    @NotNull
     private TurnoRevision turnoRevision;
    
-    @Column(name = "valor_pesaje_antes")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "hora_inicio_despacho")
     @NotNull
+    private Date horaInicioDespacho;
+
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(name = "hora_fin_despacho")
+    private Date horaFinDespacho;
+
+    @Column(name = "valor_pesaje_antes")
     private Double valorPesajeAntes;
 
     @Column(name = "valor_pesaje_despues")
-    @NotNull
     private Double valorPesajeDespues;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_inicio_carga")
-    @NotNull
     private Date horaInicioCarga;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_fin_carga")
-    @NotNull
     private Date horaFinCarga;
 
     @Embedded
@@ -149,14 +153,31 @@ public class Despacho {
         this.auditoria = auditoria;
     }
 
-    @Override
-    public String toString() {
-        return "Despacho [idDespacho=" + idDespacho + ", ordenRecojo=" + ordenRecojo + ", planta=" + planta
-                + ", turnoRevision=" + turnoRevision + ", estadoDespacho=" + estadoDespacho + ", valorPesajeAntes="
-                + valorPesajeAntes + ", valorPesajeDespues=" + valorPesajeDespues + ", horaInicioCarga="
-                + horaInicioCarga + ", horaFinCarga=" + horaFinCarga + ", auditoria=" + auditoria + "]";
+    public Date getHoraInicioDespacho() {
+        return horaInicioDespacho;
     }
 
-        
+    public void setHoraInicioDespacho(Date horaInicioDespacho) {
+        this.horaInicioDespacho = horaInicioDespacho;
+    }
+
+    public Date getHoraFinDespacho() {
+        return horaFinDespacho;
+    }
+
+    public void setHoraFinDespacho(Date horaFinDespacho) {
+        this.horaFinDespacho = horaFinDespacho;
+    }
+
+    @Override
+    public String toString() {
+        return "Despacho [idDespacho=" + idDespacho + ", planta=" + planta + ", ordenRecojo=" + ordenRecojo
+                + ", estadoDespacho=" + estadoDespacho + ", turnoRevision=" + turnoRevision + ", horaInicioDespacho="
+                + horaInicioDespacho + ", horaFinDespacho=" + horaFinDespacho + ", valorPesajeAntes=" + valorPesajeAntes
+                + ", valorPesajeDespues=" + valorPesajeDespues + ", horaInicioCarga=" + horaInicioCarga
+                + ", horaFinCarga=" + horaFinCarga + ", auditoria=" + auditoria + "]";
+    }
+
+      
     
 }

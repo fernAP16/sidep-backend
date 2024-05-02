@@ -18,4 +18,5 @@ public class OrdenRecojoService {
     public List<OrdenRecojo> getOrdenesRecojoPorConductor(Integer idConductor) {
         return ordenRecojoRepository.findByConductor_IdConductor(idConductor);
     }
+
 }

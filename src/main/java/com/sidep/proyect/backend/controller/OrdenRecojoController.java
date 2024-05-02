@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sidep.proyect.backend.model.OrdenRecojo;
 import com.sidep.proyect.backend.service.OrdenRecojoService;
 
+
 @RestController
 @RequestMapping("/api/ordenRecojo")
 public class OrdenRecojoController {
@@ -26,4 +27,5 @@ public class OrdenRecojoController {
         List<OrdenRecojo> ordenes = ordenRecojoService.getOrdenesRecojoPorConductor(idConductor);
         return ResponseEntity.ok(ordenes);
     }
+    
 }

@@ -39,9 +39,10 @@ public class CanalCarga {
     
     @Embedded
     @Valid
-    private Auditoria auditoria;
+    private Auditoria auditoria;    
 
-    public CanalCarga() {
+    public CanalCarga(Integer idCanalCarga) {
+        this.idCanalCarga = idCanalCarga;
     }
 
     public Integer getIdCanalCarga() {
