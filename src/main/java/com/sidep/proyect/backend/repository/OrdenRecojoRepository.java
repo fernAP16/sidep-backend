@@ -11,4 +11,6 @@ import com.sidep.proyect.backend.model.OrdenRecojo;
 public interface OrdenRecojoRepository extends JpaRepository<OrdenRecojo, Long> {
 
     List<OrdenRecojo> findByConductor_IdConductor(Integer idConductor);
+
+    
 }

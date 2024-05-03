@@ -40,7 +40,6 @@ public class TurnoRevision {
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_inicio")
-    @NotNull
     private Date horaInicio;
 
     @Temporal(value = TemporalType.TIMESTAMP)
