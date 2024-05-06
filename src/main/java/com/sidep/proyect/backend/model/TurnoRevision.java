@@ -24,14 +24,17 @@ public class TurnoRevision {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idTurnoRevision;
 
-    @JoinColumn(name = "id_revisor")
+    @JoinColumn(name = "id_despacho")
     @ManyToOne
     @NotNull
+    private Despacho despacho;
+
+    @JoinColumn(name = "id_revisor")
+    @ManyToOne
     private Revisor revisor;
 
     @JoinColumn(name = "id_punto_control")
     @ManyToOne
-    @NotNull
     private PuntoControl puntoControl;
     
     @Column(name = "turno_dia")
@@ -44,11 +47,9 @@ public class TurnoRevision {
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_fin")
-    @NotNull
     private Date horaFin;
 
     @Column(name = "es_aprobado")
-    @NotNull
     private Integer esAprobado;
 
     @Embedded
@@ -64,6 +65,14 @@ public class TurnoRevision {
 
     public void setIdTurnoRevision(Integer idTurnoRevision) {
         this.idTurnoRevision = idTurnoRevision;
+    }
+
+    public Despacho getDespacho() {
+        return despacho;
+    }
+
+    public void setDespacho(Despacho despacho) {
+        this.despacho = despacho;
     }
 
     public Revisor getRevisor() {
@@ -124,9 +133,11 @@ public class TurnoRevision {
 
     @Override
     public String toString() {
-        return "TurnoRevision [idTurnoRevision=" + idTurnoRevision + ", revisor=" + revisor + ", puntoControl="
-                + puntoControl + ", turnoDia=" + turnoDia + ", horaInicio=" + horaInicio + ", horaFin=" + horaFin
-                + ", esAprobado=" + esAprobado + ", auditoria=" + auditoria + "]";
+        return "TurnoRevision [idTurnoRevision=" + idTurnoRevision + ", despacho=" + despacho + ", revisor=" + revisor
+                + ", puntoControl=" + puntoControl + ", turnoDia=" + turnoDia + ", horaInicio=" + horaInicio
+                + ", horaFin=" + horaFin + ", esAprobado=" + esAprobado + ", auditoria=" + auditoria + "]";
     }
+
     
+
 }
