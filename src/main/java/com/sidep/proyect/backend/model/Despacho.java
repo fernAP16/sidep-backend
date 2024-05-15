@@ -38,10 +38,6 @@ public class Despacho {
     @ManyToOne
     @NotNull
     private EstadoDespacho estadoDespacho;
-
-    @JoinColumn(name = "id_turno_revision")
-    @ManyToOne
-    private TurnoRevision turnoRevision;
    
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_inicio_despacho")
@@ -95,14 +91,6 @@ public class Despacho {
 
     public void setPlanta(Planta planta) {
         this.planta = planta;
-    }
-
-    public TurnoRevision getTurnoRevision() {
-        return turnoRevision;
-    }
-
-    public void setTurnoRevision(TurnoRevision turnoRevision) {
-        this.turnoRevision = turnoRevision;
     }
 
     public EstadoDespacho getEstadoDespacho() {
@@ -172,8 +160,7 @@ public class Despacho {
     @Override
     public String toString() {
         return "Despacho [idDespacho=" + idDespacho + ", planta=" + planta + ", ordenRecojo=" + ordenRecojo
-                + ", estadoDespacho=" + estadoDespacho + ", turnoRevision=" + turnoRevision + ", horaInicioDespacho="
-                + horaInicioDespacho + ", horaFinDespacho=" + horaFinDespacho + ", valorPesajeAntes=" + valorPesajeAntes
+                + ", estadoDespacho=" + estadoDespacho + ", horaInicioDespacho=" + horaInicioDespacho + ", horaFinDespacho=" + horaFinDespacho + ", valorPesajeAntes=" + valorPesajeAntes
                 + ", valorPesajeDespues=" + valorPesajeDespues + ", horaInicioCarga=" + horaInicioCarga
                 + ", horaFinCarga=" + horaFinCarga + ", auditoria=" + auditoria + "]";
     }

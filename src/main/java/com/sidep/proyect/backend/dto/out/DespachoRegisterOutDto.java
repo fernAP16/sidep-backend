@@ -5,6 +5,7 @@ import java.util.Date;
 public class DespachoRegisterOutDto {
 
     private Integer idDespacho;
+    private Integer idPlanta;
     private Date fechaVencLicencia;
     private Date fechaVencCircTracto;
     private Date fechaVencCircCarreta;
@@ -22,6 +23,14 @@ public class DespachoRegisterOutDto {
 
     public void setIdDespacho(Integer idDespacho) {
         this.idDespacho = idDespacho;
+    }
+
+    public Integer getIdPlanta() {
+        return idPlanta;
+    }
+
+    public void setIdPlanta(Integer idPlanta) {
+        this.idPlanta = idPlanta;
     }
 
     public Date getFechaVencLicencia() {
@@ -82,11 +91,11 @@ public class DespachoRegisterOutDto {
 
     @Override
     public String toString() {
-        return "DespachoRegisterOutDto [idDespacho=" + idDespacho + ", fechaVencLicencia=" + fechaVencLicencia
-                + ", fechaVencCircTracto=" + fechaVencCircTracto + ", fechaVencCircCarreta=" + fechaVencCircCarreta
-                + ", tieneTarjPropiedadTracto=" + tieneTarjPropiedadTracto + ", tieneTarjPropiedadCarreta="
-                + tieneTarjPropiedadCarreta + ", fechaVencSoatTracto=" + fechaVencSoatTracto + ", errorMessage="
-                + errorMessage + "]";
+        return "DespachoRegisterOutDto [idDespacho=" + idDespacho + ", idPlanta=" + idPlanta + ", fechaVencLicencia="
+                + fechaVencLicencia + ", fechaVencCircTracto=" + fechaVencCircTracto + ", fechaVencCircCarreta="
+                + fechaVencCircCarreta + ", tieneTarjPropiedadTracto=" + tieneTarjPropiedadTracto
+                + ", tieneTarjPropiedadCarreta=" + tieneTarjPropiedadCarreta + ", fechaVencSoatTracto="
+                + fechaVencSoatTracto + ", errorMessage=" + errorMessage + "]";
     }
 
     
