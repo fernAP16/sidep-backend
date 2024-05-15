@@ -96,6 +96,8 @@ public class DespachoRegisterOutDto {
                 + fechaVencCircCarreta + ", tieneTarjPropiedadTracto=" + tieneTarjPropiedadTracto
                 + ", tieneTarjPropiedadCarreta=" + tieneTarjPropiedadCarreta + ", fechaVencSoatTracto="
                 + fechaVencSoatTracto + ", errorMessage=" + errorMessage + "]";
-    }    
+    }
+
+    
 
 }

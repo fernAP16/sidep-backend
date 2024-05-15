@@ -11,4 +11,8 @@ public interface TurnoRevisionService {
     TurnoRevisionOutDto registrarTurnoRevision(TurnoRevisionInDto inDto);
 
     TurnoRevisionOutDto obtenerTurnoRevision(TurnoRevisionInDto inDto);
+
+    
+
+
 }

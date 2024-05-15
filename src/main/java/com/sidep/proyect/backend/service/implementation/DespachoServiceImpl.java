@@ -19,6 +19,7 @@ import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.model.EstadoDespacho;
 import com.sidep.proyect.backend.model.OrdenRecojo;
 import com.sidep.proyect.backend.model.Planta;
+import com.sidep.proyect.backend.model.TurnoRevision;
 import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.DespachoService;
 import com.sidep.proyect.backend.util.QueryUtils;
@@ -52,35 +53,22 @@ public class DespachoServiceImpl implements DespachoService{
             System.out.println(e);
         }
 
-        Date today = new Date();
-        String message = "";
-        if(today.compareTo(outDto.getFechaVencLicencia()) >= 0){
-            message += "+Licencia de conducir vencido";
-        }
-        if (today.compareTo(outDto.getFechaVencCircTracto()) >= 0){
-            message += "+Tarjeta de circulación del tracto vencida";
-        }
-        if (outDto.getTieneTarjPropiedadTracto() == 0){
-            message += "+Tarjeta de propiedad del tracto no registrada";
-        }
-        if (today.compareTo(outDto.getFechaVencSoatTracto()) >= 0){
-            message += "+No renovó su SOAT\n";
-        }
-        if (today.compareTo(outDto.getFechaVencCircCarreta()) >= 0){
-            message += "+Tarjeta de circulación de la carreta vencida";
-        }
-        if (outDto.getTieneTarjPropiedadCarreta() == 0){
-            message += "+Tarjeta de propiedad de la carreta no registrada";
-        } 
-        outDto.setErrorMessage(message);
-        if(message.equals("")){
-            // Registrar orden
-            Integer idDespacho = registrarNuevoDespacho(inDto);
+        outDto.setErrorMessage(obtenerMensajeError(outDto));
+        
+        if(outDto.getErrorMessage().equals("")){
+            // Obtenemos la planta
+            Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
+            Object itemPlanta = queryPlanta.getSingleResult();
+            Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
+            if(idPlanta == null){
+                outDto.setErrorMessage("+No se encuentra cerca a la planta de despacho");
+                return outDto;
+            } 
+            outDto.setIdPlanta(idPlanta);
+            // Registrar despacho
+            Integer idDespacho = registrarNuevoDespacho(inDto.getIdOrden(), idPlanta);
             outDto.setIdDespacho(idDespacho);
-            // Obtener el idPlanta
-            outDto.setIdPlanta(1);
             // Actualizar el estado de la orden a "Despachando"
-            System.out.println(inDto.getIdOrden());
             Query queryOrden = actualizarOrden(inDto.getIdOrden());
             int filasActualizadas = queryOrden.executeUpdate();
             if(filasActualizadas > 0){
@@ -112,13 +100,53 @@ public class DespachoServiceImpl implements DespachoService{
         return query;
     }
 
-    private Integer registrarNuevoDespacho (DespachoRegisterInDto inDto){
+    private String obtenerMensajeError(DespachoRegisterOutDto outDto){
+        Date today = new Date();
+        String message = "";
+        if(today.compareTo(outDto.getFechaVencLicencia()) >= 0){
+            message += "+Licencia de conducir vencido";
+        }
+        if (today.compareTo(outDto.getFechaVencCircTracto()) >= 0){
+            message += "+Tarjeta de circulación del tracto vencida";
+        }
+        if (outDto.getTieneTarjPropiedadTracto() == 0){
+            message += "+Tarjeta de propiedad del tracto no registrada";
+        }
+        if (today.compareTo(outDto.getFechaVencSoatTracto()) >= 0){
+            message += "+No renovó su SOAT\n";
+        }
+        if (today.compareTo(outDto.getFechaVencCircCarreta()) >= 0){
+            message += "+Tarjeta de circulación de la carreta vencida";
+        }
+        if (outDto.getTieneTarjPropiedadCarreta() == 0){
+            message += "+Tarjeta de propiedad de la carreta no registrada";
+        } 
+        return message;
+    }
+
+    private Query obtenerPlanta(Double x, Double y){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("SELECT id_planta ");
+        sql.append("FROM sd_planta ");
+        sql.append("WHERE ubicacion_x1 < :x AND ubicacion_x2 > :x ");
+        sql.append("AND ubicacion_y1 < :y AND ubicacion_y2 > :y ");
+        parameters.put("x", x);
+        parameters.put("y", y);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    private Integer registrarNuevoDespacho (Integer idOrden, Integer idPlanta){
         Despacho despacho = new Despacho();
 
         despacho.setOrdenRecojo(new OrdenRecojo());
-        despacho.getOrdenRecojo().setIdOrdenRecojo(inDto.getIdOrden());
+        despacho.getOrdenRecojo().setIdOrdenRecojo(idOrden);
         despacho.setPlanta(new Planta());
-        despacho.getPlanta().setIdPlanta(1);
+        despacho.getPlanta().setIdPlanta(idPlanta);
         despacho.setEstadoDespacho(new EstadoDespacho());
         despacho.getEstadoDespacho().setIdEstadoDespacho(1);
         despacho.setHoraInicioDespacho(new Date());
@@ -143,6 +171,21 @@ public class DespachoServiceImpl implements DespachoService{
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
         return query;
+    }
+
+    private Integer registrarTurnoRevision(Integer idDespacho, Integer nuevoTurno){
+        TurnoRevision turnoRevision = new TurnoRevision();
+
+        turnoRevision.setDespacho(new Despacho());
+        turnoRevision.getDespacho().setIdDespacho(idDespacho);
+        turnoRevision.setTurnoDia(nuevoTurno);
+        turnoRevision.setAuditoria(new Auditoria());
+        turnoRevision.getAuditoria().setActivo(1);
+        turnoRevision.getAuditoria().setFechaRegistro(new Date());
+        turnoRevision.getAuditoria().setUsuarioRegistro("usuario");
+        crudService.create(turnoRevision);
+
+        return turnoRevision.getIdTurnoRevision();
     }
 
     @Override

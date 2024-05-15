@@ -28,5 +28,10 @@ public class TurnoRevisionController {
     public TurnoRevisionOutDto obtenerTurnoRevision(@RequestBody TurnoRevisionInDto inDto){
         return turnoRevisionService.obtenerTurnoRevision(inDto);
     }
+
+    // @PostMapping("/obtener")
+    // public TurnoRevisionOutDto obtenerTurnoRevision(@RequestBody TurnoRevisionInDto inDto){
+    //     return turnoRevisionService.obtenerTurnoRevision(inDto);
+    // }
     
 }

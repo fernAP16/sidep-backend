@@ -35,7 +35,10 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         TurnoRevision turnoRevision = new TurnoRevision();
         Integer turnoAsignado = obtenerTurnoAsignado(inDto.getIdPlanta());
         Integer turnoActual = obtenerTurnoActual(inDto.getIdPlanta());
-
+        if(turnoAsignado == null) turnoAsignado = 0;
+        turnoAsignado += 1;
+        if(turnoActual == null) turnoActual = 0;
+        turnoActual += 1;
         turnoRevision.setDespacho(new Despacho());
         turnoRevision.getDespacho().setIdDespacho(inDto.getIdDespacho());
         turnoRevision.setTurnoDia(turnoAsignado);
@@ -56,26 +59,26 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
     private Integer obtenerTurnoAsignado(Integer idPlanta){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
-        sql.append("SELECT MAX(tr.turno_dia) ");
-        sql.append("FROM sd_turno_revision tr ");
-        sql.append("INNER JOIN sd_despacho ds ON tr.id_despacho = ds.id_despacho ");
-        sql.append("INNER JOIN sd_planta pl ON pl.id_planta = ds.id_planta ");
-        sql.append("WHERE ds.id_planta = :idPlanta ");
+        sql.append("SELECT MAX(tr.turno_dia) as ultimo_turno FROM sd_turno_revision tr ");
+        sql.append("INNER JOIN sd_despacho dp ON tr.id_despacho = dp.id_despacho ");
+        sql.append("INNER JOIN sd_planta pl ON dp.id_planta = pl.id_planta ");
+        sql.append("WHERE dp.id_planta = :idPlanta AND DATE(tr.fecha_registro) = CURDATE() ");
         parameters.put("idPlanta", idPlanta);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
-        return QueryUtils.getAsInteger(query.getSingleResult()) + 1;
+        return QueryUtils.getAsInteger(query.getSingleResult());
     }
 
     private Integer obtenerTurnoActual(Integer idPlanta){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
-        sql.append("SELECT MAX(tr.turno_dia) ");
+        sql.append("SELECT MAX(tr.turno_dia) as turno_actual ");
         sql.append("FROM sd_turno_revision tr ");
-        sql.append("INNER JOIN sd_despacho ds ON tr.id_despacho = ds.id_despacho ");
-        sql.append("INNER JOIN sd_planta pl ON pl.id_planta = ds.id_planta ");
-        sql.append("WHERE ds.id_planta = :idPlanta ");
+        sql.append("INNER JOIN sd_despacho dp ON tr.id_despacho = dp.id_despacho ");
+        sql.append("INNER JOIN sd_planta pl ON pl.id_planta = dp.id_planta ");
+        sql.append("WHERE dp.id_planta = :idPlanta ");
+        sql.append("AND DATE(tr.fecha_registro) = CURDATE() ");
         sql.append("AND tr.hora_inicio IS NOT NULL ");
         parameters.put("idPlanta", idPlanta);
 
@@ -90,7 +93,8 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         Integer turnoActual = obtenerTurnoActual(inDto.getIdPlanta());
         Query query = consultarTurnoAsignado(inDto.getIdDespacho());
         List<Object[]> resultList = query.getResultList();
-        
+        if(turnoActual == null) turnoActual = 0;
+        turnoActual += 1;
         if (!resultList.isEmpty()) {
             Object[] item = resultList.get(0);
             outDto.setIdTurnoRevision(QueryUtils.getAsInteger(item[0]));
