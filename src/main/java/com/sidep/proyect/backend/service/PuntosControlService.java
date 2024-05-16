@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sidep.proyect.backend.dto.in.CoordenadasPlantaInDto;
 import com.sidep.proyect.backend.dto.out.PuntosControlPlantaOutDto;
 
 @Service
 public interface PuntosControlService {
     
-    public List<PuntosControlPlantaOutDto> listarPuntosControlPorPlanta(Integer idPlanta);
+    public List<PuntosControlPlantaOutDto> listarPuntosControlPorPlanta(CoordenadasPlantaInDto idPlanta);
     
 }

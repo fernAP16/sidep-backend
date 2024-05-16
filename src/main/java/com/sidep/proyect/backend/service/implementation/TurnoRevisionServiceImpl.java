@@ -8,7 +8,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.sidep.proyect.backend.dto.in.TurnoRevisionAsignarInDto;
 import com.sidep.proyect.backend.dto.in.TurnoRevisionInDto;
+import com.sidep.proyect.backend.dto.out.TurnoRevisionAsignarOutDto;
+import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.model.Auditoria;
 import com.sidep.proyect.backend.model.Despacho;
@@ -33,8 +36,13 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
 
         TurnoRevisionOutDto outDto = new TurnoRevisionOutDto();
         TurnoRevision turnoRevision = new TurnoRevision();
-        Integer turnoAsignado = obtenerTurnoAsignado(inDto.getIdPlanta());
-        Integer turnoActual = obtenerTurnoActual(inDto.getIdPlanta());
+
+        Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
+        Object itemPlanta = queryPlanta.getSingleResult();
+        Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
+
+        Integer turnoAsignado = obtenerTurnoAsignado(idPlanta);
+        Integer turnoActual = obtenerTurnoActual(idPlanta);
         if(turnoAsignado == null) turnoAsignado = 0;
         turnoAsignado += 1;
         if(turnoActual == null) turnoActual = 0;
@@ -90,11 +98,15 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
     @Override
     public TurnoRevisionOutDto obtenerTurnoRevision(TurnoRevisionInDto inDto){
         TurnoRevisionOutDto outDto = new TurnoRevisionOutDto();
-        Integer turnoActual = obtenerTurnoActual(inDto.getIdPlanta());
+
+        Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
+        Object itemPlanta = queryPlanta.getSingleResult();
+        Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
+
+        Integer turnoActual = obtenerTurnoActual(idPlanta);
         Query query = consultarTurnoAsignado(inDto.getIdDespacho());
         List<Object[]> resultList = query.getResultList();
-        if(turnoActual == null) turnoActual = 0;
-        turnoActual += 1;
+        if(turnoActual == null) turnoActual = 1;
         if (!resultList.isEmpty()) {
             Object[] item = resultList.get(0);
             outDto.setIdTurnoRevision(QueryUtils.getAsInteger(item[0]));
@@ -119,6 +131,118 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         sql.append("WHERE ds.id_despacho = :idDespacho ");
 
         parameters.put("idDespacho", idDespacho);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public TurnoRevisionDespachoOutDto obtenerDatosDespacho(Integer idTurnoRevision){
+        TurnoRevisionDespachoOutDto outDto = new TurnoRevisionDespachoOutDto();
+        Query query = consultarOrdenPorIdRevision(idTurnoRevision);
+        List<Object[]> result = query.getResultList();
+        Object[] item = result.get(0);
+        outDto.setIdOrdenRecojo(QueryUtils.getAsInteger(item[0]));
+        outDto.setRazonSocial(QueryUtils.getAsString(item[1]));
+        outDto.setPlacaTracto(QueryUtils.getAsString(item[2]));
+        outDto.setPlacaCarreta(QueryUtils.getAsString(item[3]));
+        outDto.setProducto(QueryUtils.getAsString(item[4]));
+        outDto.setCantidad(QueryUtils.getAsString(item[5]));
+        return outDto;
+    }
+
+    private Query consultarOrdenPorIdRevision(Integer idTurnoRevision){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("SELECT od.id_orden_recojo, "); // 0
+        sql.append("cl.razon_social, "); // 1
+        sql.append("ve_tracto.placa as placa_tracto, "); // 2
+        sql.append("ve_carreta.placa as placa_carreta, "); // 3
+        sql.append("CONCAT(pr.nombre,' ',ma.nombre) as nombre_producto, "); // 4
+        sql.append("CONCAT(od.cantidad, ' ' ,un.nombre) as cantidad "); // 5
+        sql.append("FROM sd_turno_revision tr ");
+        sql.append("INNER JOIN sd_despacho de ON de.id_despacho = tr.id_despacho ");
+        sql.append("INNER JOIN sd_orden_recojo od ON od.id_orden_recojo = de.id_orden_recojo ");
+        sql.append("INNER JOIN sd_sede_cliente sc ON sc.id_sede_cliente = od.id_sede_cliente ");
+        sql.append("INNER JOIN sd_cliente cl ON cl.id_cliente = sc.id_cliente ");
+        sql.append("INNER JOIN sd_vehiculo ve_tracto ON od.id_tracto = ve_tracto.id_vehiculo ");
+        sql.append("INNER JOIN sd_vehiculo ve_carreta ON od.id_carreta = ve_carreta.id_vehiculo ");
+        sql.append("INNER JOIN sd_producto_venta pv ON od.id_producto_venta = pv.id_producto_venta ");
+        sql.append("INNER JOIN sd_producto pr ON pr.id_producto = pv.id_producto ");
+        sql.append("INNER JOIN sd_marca ma ON ma.id_marca = pv.id_marca ");
+        sql.append("INNER JOIN sd_unidad un ON un.id_unidad = pv.id_unidad ");
+        sql.append("WHERE tr.id_turno_revision = :idTurnoRevision ");
+
+        parameters.put("idTurnoRevision", idTurnoRevision);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public TurnoRevisionAsignarOutDto asignarRevisorYPuntoControlATurnoRevision(TurnoRevisionAsignarInDto inDto){
+        TurnoRevisionAsignarOutDto outDto = new TurnoRevisionAsignarOutDto();
+
+        Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
+        Object itemPlanta = queryPlanta.getSingleResult();
+        Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
+
+        Integer idTurnoRevisionSiguienteTurno = siguienteTurnoRegistro(idPlanta);
+        Query queryOrden = actualizarTurnoRevision(inDto, idTurnoRevisionSiguienteTurno);
+        int filasActualizadas = queryOrden.executeUpdate();
+        if(filasActualizadas > 0){
+            System.out.println("Se actualizaron " + filasActualizadas + " filas.");
+        } else {
+            System.out.println("No se realizaron actualizaciones.");
+        }
+        outDto.setIdTurnoRevision(idTurnoRevisionSiguienteTurno);
+        outDto.setIdPlanta(idPlanta);
+        return outDto;
+    }
+
+    private Query obtenerPlanta(Double x, Double y){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT id_planta ");
+        sql.append("FROM sd_planta ");
+        sql.append("WHERE ubicacion_x1 < :x AND ubicacion_x2 > :x ");
+        sql.append("AND ubicacion_y1 < :y AND ubicacion_y2 > :y ");
+        parameters.put("x", x);
+        parameters.put("y", y);
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+        return query;
+    }
+
+    private Integer siguienteTurnoRegistro(Integer idPlanta){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT MIN(id_turno_revision) as siguiente_turno ");
+        sql.append("FROM sd_turno_revision tr ");
+        sql.append("INNER JOIN sd_despacho dp ON tr.id_despacho = dp.id_despacho ");
+        sql.append("INNER JOIN sd_planta pl ON pl.id_planta = dp.id_planta ");
+        sql.append("WHERE dp.id_planta = :idPlanta ");
+        sql.append("AND DATE(tr.fecha_registro) = CURDATE() ");
+        sql.append("AND tr.hora_inicio IS NULL ");
+        parameters.put("idPlanta", idPlanta);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return QueryUtils.getAsInteger(query.getSingleResult());
+    }
+
+    private Query actualizarTurnoRevision(TurnoRevisionAsignarInDto inDto, Integer idTurnoRevisionSiguienteTurno){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_turno_revision ");
+        sql.append("SET id_revisor = :idRevisor, id_punto_control = :idPuntoControl, hora_inicio=sysdate() ");
+        sql.append("WHERE id_turno_revision = :idTurnoRevision ");
+        parameters.put("idRevisor", inDto.getIdRevisor());
+        parameters.put("idPuntoControl", inDto.getIdPuntoControl());
+        parameters.put("idTurnoRevision", idTurnoRevisionSiguienteTurno);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 

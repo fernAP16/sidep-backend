@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sidep.proyect.backend.dto.in.CoordenadasPlantaInDto;
 import com.sidep.proyect.backend.dto.out.PuntosControlPlantaOutDto;
 import com.sidep.proyect.backend.service.PuntosControlService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -19,9 +20,9 @@ public class PuntoControlController {
     @Autowired
     private PuntosControlService puntoControlService;
 
-    @GetMapping("/listByPlanta/{idPlanta}")
-    public List<PuntosControlPlantaOutDto> listarPuntosControlPorPlanta(@PathVariable Integer idPlanta) {
-        return puntoControlService.listarPuntosControlPorPlanta(idPlanta);
+    @PostMapping("/listByPlanta")
+    public List<PuntosControlPlantaOutDto> listarPuntosControlPorPlanta(@RequestBody CoordenadasPlantaInDto inDto) {
+        return puntoControlService.listarPuntosControlPorPlanta(inDto);
     }
     
 

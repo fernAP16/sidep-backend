@@ -3,7 +3,8 @@ package com.sidep.proyect.backend.dto.in;
 public class TurnoRevisionInDto {
     
     private Integer idDespacho;
-    private Integer idPlanta;
+    private Double x;
+    private Double y;
 
     public TurnoRevisionInDto() {
     }
@@ -16,17 +17,27 @@ public class TurnoRevisionInDto {
         this.idDespacho = idDespacho;
     }
 
-    public Integer getIdPlanta() {
-        return idPlanta;
+    public Double getX() {
+        return x;
     }
 
-    public void setIdPlanta(Integer idPlanta) {
-        this.idPlanta = idPlanta;
+    public void setX(Double x) {
+        this.x = x;
+    }
+
+    public Double getY() {
+        return y;
+    }
+
+    public void setY(Double y) {
+        this.y = y;
     }
 
     @Override
     public String toString() {
-        return "TurnoRevisionInDto [idDespacho=" + idDespacho + ", idPlanta=" + idPlanta + "]";
-    }   
+        return "TurnoRevisionInDto [idDespacho=" + idDespacho + ", x=" + x + ", y=" + y + "]";
+    }
+
+    
     
 }

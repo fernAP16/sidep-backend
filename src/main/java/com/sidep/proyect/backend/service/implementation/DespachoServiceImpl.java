@@ -19,7 +19,6 @@ import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.model.EstadoDespacho;
 import com.sidep.proyect.backend.model.OrdenRecojo;
 import com.sidep.proyect.backend.model.Planta;
-import com.sidep.proyect.backend.model.TurnoRevision;
 import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.DespachoService;
 import com.sidep.proyect.backend.util.QueryUtils;
@@ -171,21 +170,6 @@ public class DespachoServiceImpl implements DespachoService{
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
         return query;
-    }
-
-    private Integer registrarTurnoRevision(Integer idDespacho, Integer nuevoTurno){
-        TurnoRevision turnoRevision = new TurnoRevision();
-
-        turnoRevision.setDespacho(new Despacho());
-        turnoRevision.getDespacho().setIdDespacho(idDespacho);
-        turnoRevision.setTurnoDia(nuevoTurno);
-        turnoRevision.setAuditoria(new Auditoria());
-        turnoRevision.getAuditoria().setActivo(1);
-        turnoRevision.getAuditoria().setFechaRegistro(new Date());
-        turnoRevision.getAuditoria().setUsuarioRegistro("usuario");
-        crudService.create(turnoRevision);
-
-        return turnoRevision.getIdTurnoRevision();
     }
 
     @Override

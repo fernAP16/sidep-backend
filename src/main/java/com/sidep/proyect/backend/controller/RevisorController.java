@@ -22,7 +22,6 @@ public class RevisorController {
     public ResponseEntity<?> loginRevisor(@RequestBody LoginInDto loginDTO)
     {
         LoginOutDto loginResponse = loginService.loginRevisor(loginDTO);
-        System.out.println(loginDTO);
         return ResponseEntity.ok(loginResponse);
     }
 }
