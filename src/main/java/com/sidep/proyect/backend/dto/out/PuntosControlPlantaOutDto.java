@@ -6,6 +6,7 @@ public class PuntosControlPlantaOutDto {
     private String codigoPuntoControl;
     private Integer idRevisorAsignado;
     private Integer idTurnoRevision;
+    private Integer es_aprobado;
     
     public PuntosControlPlantaOutDto() {
     }
@@ -40,6 +41,14 @@ public class PuntosControlPlantaOutDto {
 
     public void setIdTurnoRevision(Integer idTurnoRevision) {
         this.idTurnoRevision = idTurnoRevision;
+    }
+
+    public Integer getEs_aprobado() {
+        return es_aprobado;
+    }
+
+    public void setEs_aprobado(Integer es_aprobado) {
+        this.es_aprobado = es_aprobado;
     }
 
     

@@ -18,4 +18,6 @@ public interface TurnoRevisionService {
     TurnoRevisionDespachoOutDto obtenerDatosDespacho(Integer idTurnoRevision);
 
     TurnoRevisionAsignarOutDto asignarRevisorYPuntoControlATurnoRevision(TurnoRevisionAsignarInDto inDto);
+
+    Integer aprobarRevision(Integer idTurnoRevision);
 }

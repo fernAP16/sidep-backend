@@ -42,6 +42,12 @@ public class TurnoRevisionController {
     public TurnoRevisionAsignarOutDto asignarRevisorYPuntoControlATurnoRevision(@RequestBody TurnoRevisionAsignarInDto inDto) {
         return turnoRevisionService.asignarRevisorYPuntoControlATurnoRevision(inDto);
     }
+
+    @PostMapping("aprobar/{idTurnoRevision}")
+    public Integer aprobarRevision(@PathVariable Integer idTurnoRevision) {
+        return turnoRevisionService.aprobarRevision(idTurnoRevision);
+    }
+    
     
     
 }

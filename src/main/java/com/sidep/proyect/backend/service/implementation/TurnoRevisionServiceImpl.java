@@ -248,4 +248,69 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
 
         return query;
     }
+
+    @Override
+    public Integer aprobarRevision(Integer idTurnoRevision){
+        Query queryAprobado = actualizarRevisionAprobado(idTurnoRevision);
+        int filasActualizadas = queryAprobado.executeUpdate();
+        if(filasActualizadas > 0){
+            Integer idDespacho = obtenerIdDespachoPorIdRevision(idTurnoRevision);
+            if(idDespacho != null){
+                Query queryEstadoPesaje = actualizarDespachoEstado(idDespacho, 4);
+                int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
+                if(filasActualizadasEstado > 0){
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else 
+                return 0;
+        } else {
+            return 0;
+        }
+    }
+
+    private Query actualizarRevisionAprobado(Integer idTurnoRevision){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_turno_revision ");
+        sql.append("SET es_aprobado = 1, hora_fin = sysdate() ");
+        sql.append("WHERE id_turno_revision = :idTurnoRevision ");
+        parameters.put("idTurnoRevision", idTurnoRevision);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    private Integer obtenerIdDespachoPorIdRevision(Integer idTurnoRevision){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("SELECT id_despacho ");
+        sql.append("FROM sd_turno_revision ");
+        sql.append("WHERE id_turno_revision = :idTurnoRevision ");
+        parameters.put("idTurnoRevision", idTurnoRevision);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return QueryUtils.getAsInteger(query.getSingleResult());
+    }
+
+    private Query actualizarDespachoEstado(Integer idDespacho, Integer idNuevoEstado){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_despacho ");
+        sql.append("SET id_estado_despacho = :idNuevoEstado ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idNuevoEstado", idNuevoEstado);
+        parameters.put("idDespacho", idDespacho);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
 }

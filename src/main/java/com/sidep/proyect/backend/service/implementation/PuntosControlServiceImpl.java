@@ -67,12 +67,13 @@ public class PuntosControlServiceImpl implements PuntosControlService {
 
         sql.append("SELECT pc.id_punto_control, "); // 0
         sql.append("pc.codigo, "); // 1
-        sql.append("tr.id_revisor, "); // 2
-        sql.append("tr.id_turno_revision "); // 3
+        sql.append("IF(tr.es_aprobado IS NULL, MAX(tr.id_revisor), NULL) AS id_turno_revision, "); // 2
+        sql.append("IF(tr.es_aprobado IS NULL, MAX(tr.id_turno_revision), NULL) AS id_turno_revision "); // 3
         sql.append("FROM sd_punto_control pc ");
         sql.append("LEFT JOIN sd_turno_revision tr ON tr.id_punto_control = pc.id_punto_control ");
         sql.append("INNER JOIN sd_planta pl ON pl.id_planta = pc.id_planta ");
         sql.append("WHERE pc.id_planta = :idPlanta ");
+        sql.append("GROUP BY pc.id_punto_control, pc.codigo, tr.es_aprobado; ");
 
         parameters.put("idPlanta", idPlanta);
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
