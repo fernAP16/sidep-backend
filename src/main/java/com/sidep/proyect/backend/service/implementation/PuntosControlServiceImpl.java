@@ -40,8 +40,18 @@ public class PuntosControlServiceImpl implements PuntosControlService {
             PuntosControlPlantaOutDto out = new PuntosControlPlantaOutDto();
             out.setIdPuntoControl(QueryUtils.getAsInteger(item[0]));
             out.setCodigoPuntoControl(QueryUtils.getAsString(item[1]));
-            out.setIdRevisorAsignado(QueryUtils.getAsInteger(item[2]));
-            out.setIdTurnoRevision(QueryUtils.getAsInteger(item[3]));
+            
+            Query queryPuntoControl = consultarDatosRevision(QueryUtils.getAsInteger(item[0]));
+            List<Object[]> resultPuntosControl = queryPuntoControl.getResultList();
+            if(resultPuntosControl.size() == 0){
+                out.setIdRevisorAsignado(null);
+                out.setIdTurnoRevision(null);
+            } else {
+                Object[] itemDatos = resultPuntosControl.get(0);
+
+                out.setIdRevisorAsignado(QueryUtils.getAsInteger(itemDatos[0]));
+                out.setIdTurnoRevision(QueryUtils.getAsInteger(itemDatos[1]));
+            }
             outDto.add(out);
         }
         return outDto;
@@ -66,16 +76,29 @@ public class PuntosControlServiceImpl implements PuntosControlService {
         Map<String, Object> parameters = new HashMap<>();
 
         sql.append("SELECT pc.id_punto_control, "); // 0
-        sql.append("pc.codigo, "); // 1
-        sql.append("IF(tr.es_aprobado IS NULL, MAX(tr.id_revisor), NULL) AS id_turno_revision, "); // 2
-        sql.append("IF(tr.es_aprobado IS NULL, MAX(tr.id_turno_revision), NULL) AS id_turno_revision "); // 3
+        sql.append("pc.codigo "); // 1
         sql.append("FROM sd_punto_control pc ");
-        sql.append("LEFT JOIN sd_turno_revision tr ON tr.id_punto_control = pc.id_punto_control ");
         sql.append("INNER JOIN sd_planta pl ON pl.id_planta = pc.id_planta ");
         sql.append("WHERE pc.id_planta = :idPlanta ");
-        sql.append("GROUP BY pc.id_punto_control, pc.codigo, tr.es_aprobado; ");
-
         parameters.put("idPlanta", idPlanta);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    private Query consultarDatosRevision(Integer idPuntoControl){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("SELECT id_turno_revision, "); // 0
+        sql.append("id_revisor "); // 1
+        sql.append("FROM sd_turno_revision ");
+        sql.append("WHERE id_punto_control = :idPuntoControl ");
+        sql.append("AND ((es_aprobado IS NULL AND id_revisor IS NOT NULL) OR (es_aprobado IS NOT NULL AND hora_fin IS NULL))");
+        sql.append("ORDER BY id_turno_revision DESC");
+        parameters.put("idPuntoControl", idPuntoControl);
+
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
         return query;

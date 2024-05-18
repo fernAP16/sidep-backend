@@ -62,6 +62,10 @@ public class TurnoRevisionController {
         return turnoRevisionService.obtenerDatosRevisionDelConductor(idDespacho);
     }
     
+    @PostMapping("/salidaRevisor/{idTurnoRevision}")
+    public Integer salirPuntoControl(@PathVariable Integer idTurnoRevision) {
+        return turnoRevisionService.salirPuntoControl(idTurnoRevision);
+    }
     
     
 }

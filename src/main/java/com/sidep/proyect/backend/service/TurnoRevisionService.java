@@ -29,4 +29,6 @@ public interface TurnoRevisionService {
     Integer registrarIncidencias(TurnoRevisionIncidenciaInDto inDto);
 
     TurnoRevisionConductorOutDto obtenerDatosRevisionDelConductor(Integer idDespacho)  throws ParseException;
+
+    Integer salirPuntoControl(Integer idRevisor);
 }

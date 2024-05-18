@@ -368,4 +368,28 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         return query;
     }
 
+    @Override
+    public Integer salirPuntoControl(Integer idTurnoRevision){
+        Query query = actualizarRevisionSalida(idTurnoRevision);
+        int filasActualizadas = query.executeUpdate();
+        if(filasActualizadas > 0){
+            return 1;
+        } else 
+            return 0;
+    }
+
+    private Query actualizarRevisionSalida(Integer idTurnoRevision){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_turno_revision ");
+        sql.append("SET id_revisor = null, id_punto_control = null, hora_inicio = null ");
+        sql.append("WHERE id_turno_revision = :idTurnoRevision ");
+        parameters.put("idTurnoRevision", idTurnoRevision);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
 }
