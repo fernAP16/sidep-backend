@@ -1,5 +1,7 @@
 package com.sidep.proyect.backend.service.implementation;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,11 +12,15 @@ import org.springframework.stereotype.Repository;
 
 import com.sidep.proyect.backend.dto.in.TurnoRevisionAsignarInDto;
 import com.sidep.proyect.backend.dto.in.TurnoRevisionInDto;
+import com.sidep.proyect.backend.dto.in.TurnoRevisionIncidenciaInDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionAsignarOutDto;
+import com.sidep.proyect.backend.dto.out.TurnoRevisionConductorOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.model.Auditoria;
 import com.sidep.proyect.backend.model.Despacho;
+import com.sidep.proyect.backend.model.Incidencia;
+import com.sidep.proyect.backend.model.TurnoIncidencia;
 import com.sidep.proyect.backend.model.TurnoRevision;
 import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.TurnoRevisionService;
@@ -254,17 +260,7 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         Query queryAprobado = actualizarRevisionAprobado(idTurnoRevision);
         int filasActualizadas = queryAprobado.executeUpdate();
         if(filasActualizadas > 0){
-            Integer idDespacho = obtenerIdDespachoPorIdRevision(idTurnoRevision);
-            if(idDespacho != null){
-                Query queryEstadoPesaje = actualizarDespachoEstado(idDespacho, 4);
-                int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
-                if(filasActualizadasEstado > 0){
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } else 
-                return 0;
+            return 1;
         } else {
             return 0;
         }
@@ -284,32 +280,91 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         return query;
     }
 
-    private Integer obtenerIdDespachoPorIdRevision(Integer idTurnoRevision){
+    @Override
+    public Integer registrarIncidencias(TurnoRevisionIncidenciaInDto inDto){
+        // Registrar incidencias
+        for (Integer id : inDto.getIdIncidencias()) {
+            TurnoIncidencia turnoIncidencia = new TurnoIncidencia();
+            turnoIncidencia.setIncidencia(new Incidencia());
+            turnoIncidencia.getIncidencia().setIdIncidencia(id);
+            turnoIncidencia.setTurnoRevision(new TurnoRevision());
+            turnoIncidencia.getTurnoRevision().setIdTurnoRevision(inDto.getIdTurnoRevision());
+            turnoIncidencia.setAuditoria(new Auditoria());
+            turnoIncidencia.getAuditoria().setActivo(1);
+            turnoIncidencia.getAuditoria().setFechaRegistro(new Date());
+            turnoIncidencia.getAuditoria().setUsuarioRegistro("usuario");
+            crudService.create(turnoIncidencia);
+            if(turnoIncidencia.getIdTurnoIncidencia() == null || turnoIncidencia.getIdTurnoIncidencia() == 0){
+                return 0;
+            }
+        }
+        // Registrar no aprobado
+        Query queryAprobado = actualizarRevisionIncidencia(inDto.getIdTurnoRevision());
+        int filasActualizadas = queryAprobado.executeUpdate();
+        if(filasActualizadas > 0){
+            return 1;
+        } else 
+            return 0;
+    }
+
+    private Query actualizarRevisionIncidencia(Integer idTurnoRevision){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
 
-        sql.append("SELECT id_despacho ");
-        sql.append("FROM sd_turno_revision ");
+        sql.append("UPDATE sd_turno_revision ");
+        sql.append("SET es_aprobado = 0, hora_fin = sysdate() ");
         sql.append("WHERE id_turno_revision = :idTurnoRevision ");
         parameters.put("idTurnoRevision", idTurnoRevision);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
-        return QueryUtils.getAsInteger(query.getSingleResult());
+        return query;
     }
 
-    private Query actualizarDespachoEstado(Integer idDespacho, Integer idNuevoEstado){
+    @Override
+    public TurnoRevisionConductorOutDto obtenerDatosRevisionDelConductor(Integer idDespacho) throws ParseException{
+        TurnoRevisionConductorOutDto outDto = new TurnoRevisionConductorOutDto();
+        Query query = consultarDatosRevisionDelConductor(idDespacho);
+        List<Object[]> result = query.getResultList();
+        Object[] item = result.get(0);
+        SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        outDto.setIdTurnoRevision(QueryUtils.getAsInteger(item[0]));
+        outDto.setCodigoPuntoControl(QueryUtils.getAsString(item[1]));
+        outDto.setEsAprobado(QueryUtils.getAsInteger(item[2]));
+        try{
+            String horaInicioString = QueryUtils.getAsString((Date)item[3]);
+            if(horaInicioString == null){
+                outDto.setHoraInicio(null);
+            } else {
+                outDto.setHoraInicio(sdfTime.parse(horaInicioString));
+            }
+            String horaFinString = QueryUtils.getAsString((Date)item[4]);
+            if(horaFinString == null){
+                outDto.setHoraFin(null);
+            } else {
+                outDto.setHoraFin(sdfTime.parse(horaFinString));
+            }
+        } catch (ParseException e){
+            System.out.println(e);
+        }
+        return outDto;
+    }
+
+    private Query consultarDatosRevisionDelConductor(Integer idDespacho){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
 
-        sql.append("UPDATE sd_despacho ");
-        sql.append("SET id_estado_despacho = :idNuevoEstado ");
-        sql.append("WHERE id_despacho = :idDespacho ");
-        parameters.put("idNuevoEstado", idNuevoEstado);
+        sql.append("SELECT tr.id_turno_revision, "); // 0
+        sql.append("pc.codigo, "); // 1
+        sql.append("tr.es_aprobado, "); // 2
+        sql.append("tr.hora_inicio, "); // 3
+        sql.append("tr.hora_fin "); // 4
+        sql.append("FROM sd_turno_revision tr ");
+        sql.append("INNER JOIN sd_punto_control pc ON tr.id_punto_control = pc.id_punto_control ");
+        sql.append("WHERE tr.id_despacho = :idDespacho ");
         parameters.put("idDespacho", idDespacho);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
-
         return query;
     }
 

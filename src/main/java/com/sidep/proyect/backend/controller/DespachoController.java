@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -50,5 +51,11 @@ public class DespachoController {
     public DespachoPorOrdenOutDto obtenerUltimoDespachoPorOden(@PathVariable Integer idOrden) {
         return despachoService.obtenerUltimoDespachoPorOrden(idOrden);
     }
+
+    @PostMapping("/nuevoEstado")
+    public Integer actualizarEstadoDespacho(@RequestBody DespachoActualizarEstadoInDto inDto) {        
+        return despachoService.actualizarEstadoDespacho(inDto);
+    }
+    
     
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -225,6 +226,32 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("FROM sd_despacho ");
         sql.append("WHERE id_orden_recojo = :idOrden ");
         parameters.put("idOrden", idOrden);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public Integer actualizarEstadoDespacho(DespachoActualizarEstadoInDto inDto){
+        Query queryEstadoPesaje = actualizarDespachoEstado(inDto.getIdDespacho(), inDto.getIdNuevoEstado());
+        int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
+        if(filasActualizadasEstado > 0){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private Query actualizarDespachoEstado(Integer idDespacho, Integer idNuevoEstado){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_despacho ");
+        sql.append("SET id_estado_despacho = :idNuevoEstado ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idNuevoEstado", idNuevoEstado);
+        parameters.put("idDespacho", idDespacho);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 

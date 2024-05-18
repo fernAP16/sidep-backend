@@ -1,12 +1,16 @@
 package com.sidep.proyect.backend.controller;
 
+import java.text.ParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sidep.proyect.backend.dto.in.TurnoRevisionAsignarInDto;
 import com.sidep.proyect.backend.dto.in.TurnoRevisionInDto;
+import com.sidep.proyect.backend.dto.in.TurnoRevisionIncidenciaInDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionAsignarOutDto;
+import com.sidep.proyect.backend.dto.out.TurnoRevisionConductorOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.service.TurnoRevisionService;
@@ -43,9 +47,19 @@ public class TurnoRevisionController {
         return turnoRevisionService.asignarRevisorYPuntoControlATurnoRevision(inDto);
     }
 
-    @PostMapping("aprobar/{idTurnoRevision}")
+    @PostMapping("/aprobar/{idTurnoRevision}")
     public Integer aprobarRevision(@PathVariable Integer idTurnoRevision) {
         return turnoRevisionService.aprobarRevision(idTurnoRevision);
+    }
+    
+    @PostMapping("/registrarIncidencia")
+    public Integer registrarIncidencias(@RequestBody TurnoRevisionIncidenciaInDto inDto) {
+        return turnoRevisionService.registrarIncidencias(inDto);
+    }
+
+    @PostMapping("/obtenerDatos/conductor/{idDespacho}")
+    public TurnoRevisionConductorOutDto obtenerDatosRevisionDelConductor(@PathVariable Integer idDespacho)  throws ParseException{
+        return turnoRevisionService.obtenerDatosRevisionDelConductor(idDespacho);
     }
     
     
