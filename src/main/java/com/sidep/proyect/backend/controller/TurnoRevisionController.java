@@ -1,6 +1,7 @@
 package com.sidep.proyect.backend.controller;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,5 +68,9 @@ public class TurnoRevisionController {
         return turnoRevisionService.salirPuntoControl(idTurnoRevision);
     }
     
-    
+    @PostMapping("/incidenciasCometidas/{idTurnoRevision}")
+    public List<String> obtenerIncidenciasPorRevision(@PathVariable Integer idTurnoRevision) {
+        return turnoRevisionService.obtenerIncidenciasPorRevision(idTurnoRevision);
+    }
+
 }

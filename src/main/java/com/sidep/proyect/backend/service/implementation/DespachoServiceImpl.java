@@ -203,6 +203,7 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("INNER JOIN sd_orden_recojo od ON de.id_orden_recojo = od.id_orden_recojo ");
         sql.append("WHERE od.id_conductor = :idConductor ");
         sql.append("GROUP BY ed.id_estado_despacho, de.id_planta ");
+        sql.append("ORDER BY id_despacho DESC ");
         parameters.put("idConductor", idConductor);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);

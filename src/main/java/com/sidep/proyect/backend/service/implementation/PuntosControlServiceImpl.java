@@ -44,13 +44,13 @@ public class PuntosControlServiceImpl implements PuntosControlService {
             Query queryPuntoControl = consultarDatosRevision(QueryUtils.getAsInteger(item[0]));
             List<Object[]> resultPuntosControl = queryPuntoControl.getResultList();
             if(resultPuntosControl.size() == 0){
-                out.setIdRevisorAsignado(null);
                 out.setIdTurnoRevision(null);
+                out.setIdRevisorAsignado(null);
             } else {
                 Object[] itemDatos = resultPuntosControl.get(0);
 
-                out.setIdRevisorAsignado(QueryUtils.getAsInteger(itemDatos[0]));
-                out.setIdTurnoRevision(QueryUtils.getAsInteger(itemDatos[1]));
+                out.setIdTurnoRevision(QueryUtils.getAsInteger(itemDatos[0]));
+                out.setIdRevisorAsignado(QueryUtils.getAsInteger(itemDatos[1]));
             }
             outDto.add(out);
         }

@@ -2,6 +2,7 @@ package com.sidep.proyect.backend.service.implementation;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -327,7 +328,7 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         Query query = consultarDatosRevisionDelConductor(idDespacho);
         List<Object[]> result = query.getResultList();
         Object[] item = result.get(0);
-        SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         outDto.setIdTurnoRevision(QueryUtils.getAsInteger(item[0]));
         outDto.setCodigoPuntoControl(QueryUtils.getAsString(item[1]));
         outDto.setEsAprobado(QueryUtils.getAsInteger(item[2]));
@@ -389,6 +390,31 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
+        return query;
+    }
+
+    @Override
+    public List<String> obtenerIncidenciasPorRevision(Integer idTurnoRevision){
+        List<String> outDto = new ArrayList<>();
+        Query query = consultarIncidenciasPorRevision(idTurnoRevision);
+        List<String> resultList = query.getResultList();
+        for (String item : resultList) {
+            outDto.add(item); // Directamente añadir la cadena
+        }
+        return outDto;
+    }
+
+    private Query consultarIncidenciasPorRevision(Integer idTurnoRevision){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("SELECT ic.nombre ");
+        sql.append("FROM sd_incidencia ic ");
+        sql.append("INNER JOIN sd_turno_incidencia ti ON ti.id_incidencia = ic.id_incidencia ");
+        sql.append("WHERE ti.id_turno_revision = :idTurnoRevision ");
+        parameters.put("idTurnoRevision", idTurnoRevision);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
         return query;
     }
 
