@@ -4,7 +4,8 @@ public class PuntosControlPlantaOutDto {
     
     private Integer idPuntoControl;
     private String codigoPuntoControl;
-    private Integer disponible;
+    private Integer idRevisorAsignado;
+    private Integer idTurnoRevision;
     
     public PuntosControlPlantaOutDto() {
     }
@@ -25,12 +26,20 @@ public class PuntosControlPlantaOutDto {
         this.codigoPuntoControl = codigoPuntoControl;
     }
 
-    public Integer getDisponible() {
-        return disponible;
+    public Integer getIdRevisorAsignado() {
+        return idRevisorAsignado;
     }
 
-    public void setDisponible(Integer disponible) {
-        this.disponible = disponible;
+    public void setIdRevisorAsignado(Integer idRevisorAsignado) {
+        this.idRevisorAsignado = idRevisorAsignado;
+    }
+
+    public Integer getIdTurnoRevision() {
+        return idTurnoRevision;
+    }
+
+    public void setIdTurnoRevision(Integer idTurnoRevision) {
+        this.idTurnoRevision = idTurnoRevision;
     }
 
     

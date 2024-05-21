@@ -9,4 +9,6 @@ public interface LoginService {
     LoginOutDto loginConductor(LoginInDto inDto);
 
     LoginOutDto loginRevisor(LoginInDto inDto);
+
+    LoginOutDto loginBalanza(LoginInDto inDto);
 }

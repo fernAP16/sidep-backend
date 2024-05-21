@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -19,7 +20,6 @@ import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.model.EstadoDespacho;
 import com.sidep.proyect.backend.model.OrdenRecojo;
 import com.sidep.proyect.backend.model.Planta;
-import com.sidep.proyect.backend.model.TurnoRevision;
 import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.DespachoService;
 import com.sidep.proyect.backend.util.QueryUtils;
@@ -173,21 +173,6 @@ public class DespachoServiceImpl implements DespachoService{
         return query;
     }
 
-    private Integer registrarTurnoRevision(Integer idDespacho, Integer nuevoTurno){
-        TurnoRevision turnoRevision = new TurnoRevision();
-
-        turnoRevision.setDespacho(new Despacho());
-        turnoRevision.getDespacho().setIdDespacho(idDespacho);
-        turnoRevision.setTurnoDia(nuevoTurno);
-        turnoRevision.setAuditoria(new Auditoria());
-        turnoRevision.getAuditoria().setActivo(1);
-        turnoRevision.getAuditoria().setFechaRegistro(new Date());
-        turnoRevision.getAuditoria().setUsuarioRegistro("usuario");
-        crudService.create(turnoRevision);
-
-        return turnoRevision.getIdTurnoRevision();
-    }
-
     @Override
     public DespachoObtenerVigenteOutDto obtenerDespachoVigentePorConductor(Integer idConductor){
         DespachoObtenerVigenteOutDto outDto = new DespachoObtenerVigenteOutDto();
@@ -218,6 +203,7 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("INNER JOIN sd_orden_recojo od ON de.id_orden_recojo = od.id_orden_recojo ");
         sql.append("WHERE od.id_conductor = :idConductor ");
         sql.append("GROUP BY ed.id_estado_despacho, de.id_planta ");
+        sql.append("ORDER BY id_despacho DESC ");
         parameters.put("idConductor", idConductor);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
@@ -241,6 +227,32 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("FROM sd_despacho ");
         sql.append("WHERE id_orden_recojo = :idOrden ");
         parameters.put("idOrden", idOrden);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public Integer actualizarEstadoDespacho(DespachoActualizarEstadoInDto inDto){
+        Query queryEstadoPesaje = actualizarDespachoEstado(inDto.getIdDespacho(), inDto.getIdNuevoEstado());
+        int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
+        if(filasActualizadasEstado > 0){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private Query actualizarDespachoEstado(Integer idDespacho, Integer idNuevoEstado){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_despacho ");
+        sql.append("SET id_estado_despacho = :idNuevoEstado ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idNuevoEstado", idNuevoEstado);
+        parameters.put("idDespacho", idDespacho);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 

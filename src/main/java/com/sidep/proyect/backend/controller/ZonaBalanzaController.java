@@ -12,16 +12,16 @@ import com.sidep.proyect.backend.dto.out.LoginOutDto;
 import com.sidep.proyect.backend.service.LoginService;
 
 @RestController
-@RequestMapping("/api/revisor")
-public class RevisorController {
+@RequestMapping("/api/zonabalanza")
+public class ZonaBalanzaController {
 
     @Autowired
     private LoginService loginService;
 
     @PostMapping("/auth")
-    public ResponseEntity<?> loginRevisor(@RequestBody LoginInDto loginDTO)
+    public ResponseEntity<?> loginBalanza(@RequestBody LoginInDto loginDTO)
     {
-        LoginOutDto loginResponse = loginService.loginRevisor(loginDTO);
+        LoginOutDto loginResponse = loginService.loginBalanza(loginDTO);
         return ResponseEntity.ok(loginResponse);
     }
 }
