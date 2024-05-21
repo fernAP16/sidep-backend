@@ -7,14 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.sidep.proyect.backend.dto.in.OrdenActualizarPorDespachoInDto;
-import com.sidep.proyect.backend.dto.in.TurnoRevisionAsignarInDto;
 import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.OrdenRecojoServiceInterface;
 
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
-@SuppressWarnings("unchecked")
 @Repository
 @Transactional
 public class OrdenRecojoServiceInterfaceImpl implements OrdenRecojoServiceInterface{

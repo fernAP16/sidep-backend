@@ -16,6 +16,7 @@ import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.service.TurnoRevisionService;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,7 +49,7 @@ public class TurnoRevisionController {
         return turnoRevisionService.asignarRevisorYPuntoControlATurnoRevision(inDto);
     }
 
-    @PostMapping("/aprobar/{idTurnoRevision}")
+    @GetMapping("/aprobar/{idTurnoRevision}")
     public Integer aprobarRevision(@PathVariable Integer idTurnoRevision) {
         return turnoRevisionService.aprobarRevision(idTurnoRevision);
     }

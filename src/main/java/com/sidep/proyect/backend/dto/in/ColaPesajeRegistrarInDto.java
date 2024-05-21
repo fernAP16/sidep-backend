@@ -1,6 +1,6 @@
 package com.sidep.proyect.backend.dto.in;
 
-public class ColaPesajeVacioInDto {
+public class ColaPesajeRegistrarInDto {
     private Integer idPlanta;
     private Integer idDespacho;
     private Integer tipoPesaje;

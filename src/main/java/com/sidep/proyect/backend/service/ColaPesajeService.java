@@ -1,10 +1,14 @@
 package com.sidep.proyect.backend.service;
 
-import com.sidep.proyect.backend.dto.in.ColaPesajeVacioInDto;
-import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
-import com.sidep.proyect.backend.dto.out.ColaPesajeVacioOutDto;
+import com.sidep.proyect.backend.dto.in.ColaPesajeDatosInDto;
+import com.sidep.proyect.backend.dto.in.ColaPesajeRegistrarInDto;
+import com.sidep.proyect.backend.dto.out.ColaPesajeDatosOutDto;
+import com.sidep.proyect.backend.dto.out.ColaPesajeRegistrarOutDto;
 
 public interface ColaPesajeService {
     
-    public ColaPesajeVacioOutDto registrarTurnoBalanza(ColaPesajeVacioInDto inDto); 
+    public ColaPesajeRegistrarOutDto registrarTurnoBalanza(ColaPesajeRegistrarInDto inDto); 
+
+    public ColaPesajeDatosOutDto obtenerDatosColaPesaje(ColaPesajeDatosInDto inDto);
+
 }

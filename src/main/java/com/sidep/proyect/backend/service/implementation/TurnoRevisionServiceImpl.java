@@ -27,6 +27,7 @@ import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.TurnoRevisionService;
 import com.sidep.proyect.backend.util.QueryUtils;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -36,7 +37,10 @@ import jakarta.transaction.Transactional;
 public class TurnoRevisionServiceImpl implements TurnoRevisionService{
 
     @Autowired
-    private CrudService crudService ;
+    private CrudService crudService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Override
     public TurnoRevisionOutDto registrarTurnoRevision(TurnoRevisionInDto inDto) {
@@ -260,24 +264,13 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
     public Integer aprobarRevision(Integer idTurnoRevision){
         Query queryAprobado = actualizarRevisionAprobado(idTurnoRevision);
         int filasActualizadas = queryAprobado.executeUpdate();
-        if(filasActualizadas > 0){
-            return 1;
-        } else {
-            return 0;
-        }
+        return filasActualizadas > 0 ? 1 : 0;
     }
 
-    private Query actualizarRevisionAprobado(Integer idTurnoRevision){
-        StringBuilder sql = new StringBuilder();
-        Map<String, Object> parameters = new HashMap<>();
-
-        sql.append("UPDATE sd_turno_revision ");
-        sql.append("SET es_aprobado = 1, hora_fin = sysdate() ");
-        sql.append("WHERE id_turno_revision = :idTurnoRevision ");
-        parameters.put("idTurnoRevision", idTurnoRevision);
-
-        Query query = crudService.createNativeQuery(sql.toString(), parameters);
-
+    private Query actualizarRevisionAprobado(Integer idTurnoRevision) {
+        String sql = "UPDATE sd_turno_revision SET es_aprobado = 1, hora_fin = sysdate() WHERE id_turno_revision = :idTurnoRevision";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("idTurnoRevision", idTurnoRevision);
         return query;
     }
 
@@ -302,10 +295,7 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
         // Registrar no aprobado
         Query queryAprobado = actualizarRevisionIncidencia(inDto.getIdTurnoRevision());
         int filasActualizadas = queryAprobado.executeUpdate();
-        if(filasActualizadas > 0){
-            return 1;
-        } else 
-            return 0;
+        return filasActualizadas > 0 ? 1 : 0;
     }
 
     private Query actualizarRevisionIncidencia(Integer idTurnoRevision){
