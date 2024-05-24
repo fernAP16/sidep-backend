@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
+import com.sidep.proyect.backend.dto.in.DespachoNuevoPesajeInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -56,6 +57,10 @@ public class DespachoController {
     public Integer actualizarEstadoDespacho(@RequestBody DespachoActualizarEstadoInDto inDto) {        
         return despachoService.actualizarEstadoDespacho(inDto);
     }
-    
+
+    @PostMapping("/agregarPesaje")
+    public Integer actualizarValorPesaje(@RequestBody DespachoNuevoPesajeInDto inDto) {
+        return despachoService.actualizarValorPesaje(inDto);
+    }
     
 }

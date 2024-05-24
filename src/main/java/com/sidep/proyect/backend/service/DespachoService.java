@@ -5,6 +5,7 @@ import java.text.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
+import com.sidep.proyect.backend.dto.in.DespachoNuevoPesajeInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -20,5 +21,7 @@ public interface DespachoService {
     DespachoPorOrdenOutDto obtenerUltimoDespachoPorOrden(Integer idOrden);
 
     Integer actualizarEstadoDespacho(DespachoActualizarEstadoInDto inDto);
+
+    Integer actualizarValorPesaje(DespachoNuevoPesajeInDto inDto);
         
 }

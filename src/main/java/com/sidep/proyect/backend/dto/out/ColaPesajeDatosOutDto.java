@@ -6,6 +6,10 @@ public class ColaPesajeDatosOutDto {
     private Integer idZonaBalanza;
     private String codigoZonaBalanza;
     private Double valorPesaje;
+    private Integer posicion;
+    private Double valorVehiculo;
+    private Double limiteInf;
+    private Double limiteSup;
     
     public ColaPesajeDatosOutDto() {
     }
@@ -35,5 +39,30 @@ public class ColaPesajeDatosOutDto {
     public void setValorPesaje(Double valorPesaje) {
         this.valorPesaje = valorPesaje;
     }
+    public Integer getPosicion() {
+        return posicion;
+    }
+    public void setPosicion(Integer posicion) {
+        this.posicion = posicion;
+    }
+    public Double getValorVehiculo() {
+        return valorVehiculo;
+    }
+    public void setValorVehiculo(Double valorVehiculo) {
+        this.valorVehiculo = valorVehiculo;
+    }
+    public Double getLimiteInf() {
+        return limiteInf;
+    }
+    public void setLimiteInf(Double limiteInf) {
+        this.limiteInf = limiteInf;
+    }
+    public Double getLimiteSup() {
+        return limiteSup;
+    }
+    public void setLimiteSup(Double limiteSup) {
+        this.limiteSup = limiteSup;
+    }
+    
     
 }

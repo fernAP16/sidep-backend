@@ -12,7 +12,7 @@ import com.sidep.proyect.backend.dto.in.TurnoRevisionInDto;
 import com.sidep.proyect.backend.dto.in.TurnoRevisionIncidenciaInDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionAsignarOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionConductorOutDto;
-import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
+import com.sidep.proyect.backend.dto.out.DespachoDatosOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.service.TurnoRevisionService;
 
@@ -40,7 +40,7 @@ public class TurnoRevisionController {
     }
 
     @PostMapping("/obtenerDespachoById/{idTurnoRevision}")
-    public TurnoRevisionDespachoOutDto obtenerDatosDespacho(@PathVariable Integer idTurnoRevision){
+    public DespachoDatosOutDto obtenerDatosDespacho(@PathVariable Integer idTurnoRevision){
         return turnoRevisionService.obtenerDatosDespacho(idTurnoRevision);
     }
 

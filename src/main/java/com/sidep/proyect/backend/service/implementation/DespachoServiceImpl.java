@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
+import com.sidep.proyect.backend.dto.in.DespachoNuevoPesajeInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
@@ -253,6 +254,55 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("WHERE id_despacho = :idDespacho ");
         parameters.put("idNuevoEstado", idNuevoEstado);
         parameters.put("idDespacho", idDespacho);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public Integer actualizarValorPesaje(DespachoNuevoPesajeInDto inDto){
+        Query queryEstadoPesaje = modificarPesaje(inDto);
+        int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
+        if(filasActualizadasEstado > 0){
+            Query queryBajarPosiciones  = bajarUnaPosicion(inDto.getIdZonaBalanza());
+            int filasBajarPosiciones = queryBajarPosiciones.executeUpdate();
+            if(filasBajarPosiciones > 0){
+                return 1;
+            }
+            return 0;
+        } else {
+            return 0;
+        }
+    }
+
+    private Query modificarPesaje(DespachoNuevoPesajeInDto inDto){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_despacho ");
+        if(inDto.getTipoPesaje() == 1)
+            sql.append("SET valor_pesaje_antes = :valorPesaje ");
+        else
+            sql.append("SET valor_pesaje_despues = :valorPesaje ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("valorPesaje", inDto.getValorPesaje());
+        parameters.put("idDespacho", inDto.getIdDespacho());
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    private Query bajarUnaPosicion(Integer inZonaBalanza){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_cola_pesaje ");
+        sql.append("SET posicion = posicion - 1 ");
+        sql.append("WHERE id_zona_balanza = :inZonaBalanza ");
+        sql.append("AND posicion != 0 ");
+        parameters.put("inZonaBalanza", inZonaBalanza);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 

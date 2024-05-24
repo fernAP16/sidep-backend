@@ -30,11 +30,6 @@ public class ColaPesaje {
     @NotNull
     private ZonaBalanza zonaBalanza;
 
-    @JoinColumn(name = "id_tipo_pesaje")
-    @ManyToOne
-    @NotNull
-    private TipoPesaje tipoPesaje;
-
     @Column(name = "posicion")
     @NotNull
     private Integer posicion;
@@ -70,14 +65,6 @@ public class ColaPesaje {
         this.zonaBalanza = zonaBalanza;
     }
 
-    public TipoPesaje getTipoPesaje() {
-        return tipoPesaje;
-    }
-
-    public void setTipoPesaje(TipoPesaje tipoPesaje) {
-        this.tipoPesaje = tipoPesaje;
-    }
-
     public Integer getPosicion() {
         return posicion;
     }
@@ -97,11 +84,7 @@ public class ColaPesaje {
     @Override
     public String toString() {
         return "ColaPesaje [idColaPesaje=" + idColaPesaje + ", despacho=" + despacho + ", zonaBalanza=" + zonaBalanza
-                + ", tipoPesaje=" + tipoPesaje + ", posicion=" + posicion + ", auditoria=" + auditoria + "]";
-    }
-
-    
-    
-    
+                + ", posicion=" + posicion + ", auditoria=" + auditoria + "]";
+    }   
 
 }

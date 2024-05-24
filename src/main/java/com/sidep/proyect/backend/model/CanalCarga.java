@@ -41,8 +41,7 @@ public class CanalCarga {
     @Valid
     private Auditoria auditoria;    
 
-    public CanalCarga(Integer idCanalCarga) {
-        this.idCanalCarga = idCanalCarga;
+    public CanalCarga() {
     }
 
     public Integer getIdCanalCarga() {

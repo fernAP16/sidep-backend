@@ -16,7 +16,7 @@ import com.sidep.proyect.backend.dto.in.TurnoRevisionInDto;
 import com.sidep.proyect.backend.dto.in.TurnoRevisionIncidenciaInDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionAsignarOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionConductorOutDto;
-import com.sidep.proyect.backend.dto.out.TurnoRevisionDespachoOutDto;
+import com.sidep.proyect.backend.dto.out.DespachoDatosOutDto;
 import com.sidep.proyect.backend.dto.out.TurnoRevisionOutDto;
 import com.sidep.proyect.backend.model.Auditoria;
 import com.sidep.proyect.backend.model.Despacho;
@@ -149,8 +149,8 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
     }
 
     @Override
-    public TurnoRevisionDespachoOutDto obtenerDatosDespacho(Integer idTurnoRevision){
-        TurnoRevisionDespachoOutDto outDto = new TurnoRevisionDespachoOutDto();
+    public DespachoDatosOutDto obtenerDatosDespacho(Integer idTurnoRevision){
+        DespachoDatosOutDto outDto = new DespachoDatosOutDto();
         Query query = consultarOrdenPorIdRevision(idTurnoRevision);
         List<Object[]> result = query.getResultList();
         Object[] item = result.get(0);

@@ -71,6 +71,12 @@ public class Planta {
     @NotNull
     private Double limiteSupPesajeDespues;
 
+    @Column(name = "qr_entrada")
+    private String qrEntrada;
+
+    @Column(name = "qr_salida")
+    private String qrSalida;
+
     @Embedded
     @Valid
     private Auditoria auditoria; 
@@ -182,6 +188,22 @@ public class Planta {
         this.limiteSupPesajeDespues = limiteSupPesajeDespues;
     }
 
+    public String getQrEntrada() {
+        return qrEntrada;
+    }
+
+    public void setQrEntrada(String qrEntrada) {
+        this.qrEntrada = qrEntrada;
+    }
+
+    public String getQrSalida() {
+        return qrSalida;
+    }
+
+    public void setQrSalida(String qrSalida) {
+        this.qrSalida = qrSalida;
+    }
+
     public Auditoria getAuditoria() {
         return auditoria;
     }
@@ -197,9 +219,9 @@ public class Planta {
                 + ubicacionX2 + ", ubicacionY1=" + ubicacionY1 + ", ubicacionY2=" + ubicacionY2
                 + ", limiteInfPesajeAntes=" + limiteInfPesajeAntes + ", limiteSupPesajeAntes=" + limiteSupPesajeAntes
                 + ", limiteInfPesajeDespues=" + limiteInfPesajeDespues + ", limiteSupPesajeDespues="
-                + limiteSupPesajeDespues + ", auditoria=" + auditoria + "]";
+                + limiteSupPesajeDespues + ", qrEntrada=" + qrEntrada + ", qrSalida=" + qrSalida + ", auditoria="
+                + auditoria + "]";
     }
 
     
-
 }

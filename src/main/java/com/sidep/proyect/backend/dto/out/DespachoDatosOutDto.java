@@ -1,6 +1,6 @@
 package com.sidep.proyect.backend.dto.out;
 
-public class TurnoRevisionDespachoOutDto {
+public class DespachoDatosOutDto {
 
     private Integer idOrdenRecojo;
     private String razonSocial;
@@ -9,7 +9,7 @@ public class TurnoRevisionDespachoOutDto {
     private String producto;
     private String cantidad;
 
-    public TurnoRevisionDespachoOutDto() {
+    public DespachoDatosOutDto() {
     }
     
     public Integer getIdOrdenRecojo() {

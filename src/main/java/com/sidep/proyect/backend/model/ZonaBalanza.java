@@ -22,6 +22,11 @@ public class ZonaBalanza {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idZonaBalanza;
 
+    @JoinColumn(name = "id_tipo_pesaje")
+    @ManyToOne
+    @NotNull
+    private TipoPesaje tipoPesaje;
+
     @JoinColumn(name = "id_planta")
     @ManyToOne
     @NotNull
@@ -31,11 +36,6 @@ public class ZonaBalanza {
     @Size(max = 10, message = "codigo: maximo 10 caracteres")
     @NotBlank
     private String codigo;
-
-    @Column(name = "qr_fisico")
-    @Size(max = 50, message = "qr_fisico: maximo 50 caracteres")
-    @NotBlank
-    private String qrFisico;
 
     @Column(name = "contrasena")
     @Size(max = 50, message = "contrasena: maximo 50 caracteres")
@@ -48,6 +48,14 @@ public class ZonaBalanza {
 
     public ZonaBalanza() {
         
+    }
+
+    public TipoPesaje getTipoPesaje() {
+        return tipoPesaje;
+    }
+
+    public void setTipoPesaje(TipoPesaje tipoPesaje) {
+        this.tipoPesaje = tipoPesaje;
     }
 
     public Integer getIdZonaBalanza() {
@@ -64,14 +72,6 @@ public class ZonaBalanza {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
-    }
-
-    public String getQrFisico() {
-        return qrFisico;
-    }
-
-    public void setQrFisico(String qrFisico) {
-        this.qrFisico = qrFisico;
     }
 
     public String getContrasena() {
@@ -100,12 +100,8 @@ public class ZonaBalanza {
 
     @Override
     public String toString() {
-        return "ZonaBalanza [idZonaBalanza=" + idZonaBalanza + ", planta=" + planta + ", codigo=" + codigo
-                + ", qrFisico=" + qrFisico + ", contrasena=" + contrasena + ", auditoria=" + auditoria + "]";
-    }
-
-    
-
-    
+        return "ZonaBalanza [idZonaBalanza=" + idZonaBalanza + ", tipoPesaje=" + tipoPesaje + ", planta=" + planta
+                + ", codigo=" + codigo + ", contrasena=" + contrasena + ", auditoria=" + auditoria + "]";
+    }    
 
 }
