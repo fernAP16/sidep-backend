@@ -48,11 +48,11 @@ public class Despacho {
     @Column(name = "hora_fin_despacho")
     private Date horaFinDespacho;
 
-    @Column(name = "valor_pesaje_antes")
-    private Double valorPesajeAntes;
+    @Column(name = "valor_pesaje_vacio")
+    private Double valorPesajeVacio;
 
-    @Column(name = "valor_pesaje_despues")
-    private Double valorPesajeDespues;
+    @Column(name = "valor_pesaje_lleno")
+    private Double valorPesajeLleno;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "hora_inicio_carga")
@@ -101,20 +101,20 @@ public class Despacho {
         this.estadoDespacho = estadoDespacho;
     }
 
-    public Double getValorPesajeAntes() {
-        return valorPesajeAntes;
+    public Double getValorPesajeVacio() {
+        return valorPesajeVacio;
     }
 
-    public void setValorPesajeAntes(Double valorPesajeAntes) {
-        this.valorPesajeAntes = valorPesajeAntes;
+    public void setValorPesajeVacio(Double valorPesajeVacio) {
+        this.valorPesajeVacio = valorPesajeVacio;
     }
 
-    public Double getValorPesajeDespues() {
-        return valorPesajeDespues;
+    public Double getValorPesajeLleno() {
+        return valorPesajeLleno;
     }
 
-    public void setValorPesajeDespues(Double valorPesajeDespues) {
-        this.valorPesajeDespues = valorPesajeDespues;
+    public void setValorPesajeLleno(Double valorPesajeLleno) {
+        this.valorPesajeLleno = valorPesajeLleno;
     }
 
     public Date getHoraInicioCarga() {
@@ -160,11 +160,12 @@ public class Despacho {
     @Override
     public String toString() {
         return "Despacho [idDespacho=" + idDespacho + ", planta=" + planta + ", ordenRecojo=" + ordenRecojo
-                + ", estadoDespacho=" + estadoDespacho + ", horaInicioDespacho=" + horaInicioDespacho + ", horaFinDespacho=" + horaFinDespacho + ", valorPesajeAntes=" + valorPesajeAntes
-                + ", valorPesajeDespues=" + valorPesajeDespues + ", horaInicioCarga=" + horaInicioCarga
-                + ", horaFinCarga=" + horaFinCarga + ", auditoria=" + auditoria + "]";
+                + ", estadoDespacho=" + estadoDespacho + ", horaInicioDespacho=" + horaInicioDespacho
+                + ", horaFinDespacho=" + horaFinDespacho + ", valorPesajeVacio=" + valorPesajeVacio
+                + ", valorPesajeLleno=" + valorPesajeLleno + ", horaInicioCarga=" + horaInicioCarga + ", horaFinCarga="
+                + horaFinCarga + ", auditoria=" + auditoria + "]";
     }
 
-      
     
+
 }

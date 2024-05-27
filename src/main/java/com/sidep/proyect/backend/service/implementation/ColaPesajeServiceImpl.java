@@ -200,9 +200,9 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         Map<String, Object> parameters = new HashMap<>();
         
         if(idTipoPesaje == 1) 
-            sql.append("SELECT valor_pesaje_antes ");
+            sql.append("SELECT valor_pesaje_vacio ");
         else
-            sql.append("SELECT valor_pesaje_despues ");
+            sql.append("SELECT valor_pesaje_lleno ");
         sql.append("FROM sd_despacho ");
         sql.append("WHERE id_despacho = :idDespacho ");
         parameters.put("idDespacho", idDespacho);

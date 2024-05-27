@@ -251,6 +251,8 @@ public class DespachoServiceImpl implements DespachoService{
 
         sql.append("UPDATE sd_despacho ");
         sql.append("SET id_estado_despacho = :idNuevoEstado ");
+        if(idNuevoEstado == 7)sql.append(", hora_inicio_carga = sysdate() ");
+        else if(idNuevoEstado == 11)sql.append(", hora_fin_despacho = sysdate() ");
         sql.append("WHERE id_despacho = :idDespacho ");
         parameters.put("idNuevoEstado", idNuevoEstado);
         parameters.put("idDespacho", idDespacho);
@@ -282,9 +284,9 @@ public class DespachoServiceImpl implements DespachoService{
 
         sql.append("UPDATE sd_despacho ");
         if(inDto.getTipoPesaje() == 1)
-            sql.append("SET valor_pesaje_antes = :valorPesaje ");
+            sql.append("SET valor_pesaje_vacio = :valorPesaje ");
         else
-            sql.append("SET valor_pesaje_despues = :valorPesaje ");
+            sql.append("SET valor_pesaje_lleno = :valorPesaje ");
         sql.append("WHERE id_despacho = :idDespacho ");
         parameters.put("valorPesaje", inDto.getValorPesaje());
         parameters.put("idDespacho", inDto.getIdDespacho());
