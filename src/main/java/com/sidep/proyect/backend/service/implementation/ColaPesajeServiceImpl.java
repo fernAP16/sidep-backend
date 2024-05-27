@@ -144,10 +144,10 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         valorPesaje = obtenerValorPesaje(inDto.getIdDespacho(), inDto.getTipoPesaje());
         outDto.setValorPesaje(valorPesaje);
 
-        limiteInf = obtenerLimitesInferiorDespacho(inDto.getIdDespacho());
+        limiteInf = obtenerLimitesInferiorDespacho(inDto.getIdDespacho(), inDto.getTipoPesaje());
         outDto.setLimiteInf(limiteInf);
 
-        limiteSup = obtenerLimitesSuperiorDespacho(inDto.getIdDespacho());
+        limiteSup = obtenerLimitesSuperiorDespacho(inDto.getIdDespacho(), inDto.getTipoPesaje());
         outDto.setLimiteSup(limiteSup);
 
         return outDto;
@@ -216,15 +216,18 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         } else if (result instanceof Double) {
             return (Double) result;
         } else {
-            throw new IllegalArgumentException("Unexpected result type: " + result.getClass().getName());
+            return null;
         }
     }
 
-    private Double obtenerLimitesInferiorDespacho(Integer idDespacho){
+    private Double obtenerLimitesInferiorDespacho(Integer idDespacho, Integer idTipoPesaje){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
         
-        sql.append("SELECT pl.limite_inf_pesaje_antes ");
+        if(idTipoPesaje == 1)
+            sql.append("SELECT pl.limite_inf_pesaje_antes ");
+        else
+            sql.append("SELECT pl.limite_inf_pesaje_despues ");
         sql.append("FROM sd_planta pl ");
         sql.append("INNER JOIN sd_despacho dp ON dp.id_planta = pl.id_planta ");
         sql.append("WHERE dp.id_despacho = :idDespacho ");
@@ -243,11 +246,14 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         }
     }
 
-    private Double obtenerLimitesSuperiorDespacho(Integer idDespacho){
+    private Double obtenerLimitesSuperiorDespacho(Integer idDespacho, Integer idTipoPesaje){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
         
-        sql.append("SELECT pl.limite_sup_pesaje_antes ");
+        if(idTipoPesaje == 1)
+            sql.append("SELECT pl.limite_sup_pesaje_antes ");
+        else   
+        sql.append("SELECT pl.limite_sup_pesaje_despues ");
         sql.append("FROM sd_planta pl ");
         sql.append("INNER JOIN sd_despacho dp ON dp.id_planta = pl.id_planta ");
         sql.append("WHERE dp.id_despacho = :idDespacho ");
