@@ -120,7 +120,7 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
     @Override
     public ColaPesajeDatosOutDto obtenerDatosColaPesaje(ColaPesajeDatosInDto inDto){
         ColaPesajeDatosOutDto outDto = new ColaPesajeDatosOutDto();
-        Double valorPesaje, valorVehiculo, limiteInf, limiteSup;
+        Double valorVehiculo, limiteInf, limiteSup, pesoUnitario;
         Query query = consultarDatosPesaje(inDto.getIdDespacho(), inDto.getTipoPesaje());
 
         List<Object[]> resultList = query.getResultList();
@@ -141,14 +141,44 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         valorVehiculo = obtenerValorVehiculo(inDto.getIdDespacho());
         outDto.setValorVehiculo(valorVehiculo);
 
-        valorPesaje = obtenerValorPesaje(inDto.getIdDespacho(), inDto.getTipoPesaje());
-        outDto.setValorPesaje(valorPesaje);
+        Query queryValoresPesajes = obtenerValorPesaje(inDto.getIdDespacho());
+        List<Object[]> resultListPesajes = queryValoresPesajes.getResultList();
+        if (!resultListPesajes.isEmpty()) {
+            Object[] itemPesajes = resultListPesajes.get(0);
+            if (itemPesajes[0] instanceof BigDecimal) {
+                outDto.setValorPesajeVacio(QueryUtils.getAsDouble(((BigDecimal)itemPesajes[0]).doubleValue()));
+            } else if (itemPesajes[0] instanceof Integer) {
+                outDto.setValorPesajeVacio((Double)((Integer)itemPesajes[0]).doubleValue());
+            } else if (itemPesajes[0] instanceof Double) {
+                outDto.setValorPesajeVacio((Double)itemPesajes[0]);
+            } else {
+                outDto.setValorPesajeVacio(0.0);
+            }
+            
+            if (itemPesajes[1] instanceof BigDecimal) {
+                outDto.setValorPesajeLleno(QueryUtils.getAsDouble(((BigDecimal)itemPesajes[1]).doubleValue()));
+            } else if (itemPesajes[1] instanceof Integer) {
+                outDto.setValorPesajeLleno((Double)((Integer)itemPesajes[1]).doubleValue());
+            } else if (itemPesajes[1] instanceof Double) {
+                outDto.setValorPesajeLleno((Double)itemPesajes[1]);
+            } else {
+                outDto.setValorPesajeLleno(0.0);
+            }
+            outDto.setCantidadProductos(QueryUtils.getAsInteger(itemPesajes[2]));
+        } else {
+            outDto.setValorPesajeVacio(0.0);
+            outDto.setValorPesajeLleno(0.0);
+        }
+        
 
         limiteInf = obtenerLimitesInferiorDespacho(inDto.getIdDespacho(), inDto.getTipoPesaje());
         outDto.setLimiteInf(limiteInf);
 
         limiteSup = obtenerLimitesSuperiorDespacho(inDto.getIdDespacho(), inDto.getTipoPesaje());
         outDto.setLimiteSup(limiteSup);
+
+        pesoUnitario = obtenerPesoUnitario(inDto.getIdDespacho());
+        outDto.setPesoUnitario(pesoUnitario);
 
         return outDto;
     }
@@ -195,16 +225,15 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         }
     }
 
-    private Double obtenerValorPesaje(Integer idDespacho, Integer idTipoPesaje){
+    private Double obtenerPesoUnitario(Integer idDespacho){
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
         
-        if(idTipoPesaje == 1) 
-            sql.append("SELECT valor_pesaje_vacio ");
-        else
-            sql.append("SELECT valor_pesaje_lleno ");
-        sql.append("FROM sd_despacho ");
-        sql.append("WHERE id_despacho = :idDespacho ");
+        sql.append("SELECT pv.peso_unidad ");
+        sql.append("FROM sd_despacho dp ");
+        sql.append("INNER JOIN sd_orden_recojo oc ON oc.id_orden_recojo = dp.id_orden_recojo ");
+        sql.append("INNER JOIN sd_producto_venta pv ON pv.id_producto_venta = oc.id_carreta ");
+        sql.append("WHERE dp.id_despacho = :idDespacho ");
         parameters.put("idDespacho", idDespacho);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
@@ -215,9 +244,23 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
             return ((BigDecimal) result).doubleValue();
         } else if (result instanceof Double) {
             return (Double) result;
+        } else if (result instanceof Integer) {
+            return (Double) ((Integer) result).doubleValue();
         } else {
-            return null;
+            throw new IllegalArgumentException("Unexpected result type: " + result.getClass().getName());
         }
+    }
+
+    private Query obtenerValorPesaje(Integer idDespacho){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT dp.valor_pesaje_vacio, dp.valor_pesaje_lleno, oc.cantidad ");
+        sql.append("FROM sd_despacho dp ");
+        sql.append("INNER JOIN sd_orden_recojo oc ON oc.id_orden_recojo = dp.id_orden_recojo ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idDespacho", idDespacho);
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+        return query;
     }
 
     private Double obtenerLimitesInferiorDespacho(Integer idDespacho, Integer idTipoPesaje){

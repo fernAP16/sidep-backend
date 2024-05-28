@@ -5,15 +5,17 @@ public class ColaPesajeDatosOutDto {
     private Integer idColaPesaje;
     private Integer idZonaBalanza;
     private String codigoZonaBalanza;
-    private Double valorPesaje;
+    private Double valorPesajeVacio;
+    private Double valorPesajeLleno;
     private Integer posicion;
     private Double valorVehiculo;
     private Double limiteInf;
     private Double limiteSup;
+    private Integer cantidadProductos;
+    private Double pesoUnitario;
     
     public ColaPesajeDatosOutDto() {
     }
-
     
     public Integer getIdColaPesaje() {
         return idColaPesaje;
@@ -33,11 +35,17 @@ public class ColaPesajeDatosOutDto {
     public void setCodigoZonaBalanza(String codigoZonaBalanza) {
         this.codigoZonaBalanza = codigoZonaBalanza;
     }
-    public Double getValorPesaje() {
-        return valorPesaje;
+    public Double getValorPesajeVacio() {
+        return valorPesajeVacio;
     }
-    public void setValorPesaje(Double valorPesaje) {
-        this.valorPesaje = valorPesaje;
+    public void setValorPesajeVacio(Double valorPesajeVacio) {
+        this.valorPesajeVacio = valorPesajeVacio;
+    }
+    public Double getValorPesajeLleno() {
+        return valorPesajeLleno;
+    }
+    public void setValorPesajeLleno(Double valorPesajeLleno) {
+        this.valorPesajeLleno = valorPesajeLleno;
     }
     public Integer getPosicion() {
         return posicion;
@@ -63,6 +71,20 @@ public class ColaPesajeDatosOutDto {
     public void setLimiteSup(Double limiteSup) {
         this.limiteSup = limiteSup;
     }
+    public Integer getCantidadProductos() {
+        return cantidadProductos;
+    }
+    public void setCantidadProductos(Integer cantidadProductos) {
+        this.cantidadProductos = cantidadProductos;
+    }
+    public Double getPesoUnitario() {
+        return pesoUnitario;
+    }
+    public void setPesoUnitario(Double pesoUnitario) {
+        this.pesoUnitario = pesoUnitario;
+    }
+
+    
     
     
 }

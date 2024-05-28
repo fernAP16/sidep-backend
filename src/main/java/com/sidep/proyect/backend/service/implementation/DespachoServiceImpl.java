@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
 import com.sidep.proyect.backend.dto.in.DespachoNuevoPesajeInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
+import com.sidep.proyect.backend.dto.in.SalidaDespachoInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoRegisterOutDto;
@@ -25,6 +26,7 @@ import com.sidep.proyect.backend.service.CrudService;
 import com.sidep.proyect.backend.service.DespachoService;
 import com.sidep.proyect.backend.util.QueryUtils;
 
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -239,6 +241,11 @@ public class DespachoServiceImpl implements DespachoService{
         Query queryEstadoPesaje = actualizarDespachoEstado(inDto.getIdDespacho(), inDto.getIdNuevoEstado());
         int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
         if(filasActualizadasEstado > 0){
+            if(inDto.getIdNuevoEstado() == 3 || inDto.getIdNuevoEstado() == 5){
+                return actualizarOrden(inDto.getIdDespacho(), 1);
+            } else if(inDto.getIdNuevoEstado() == 11){
+                return actualizarOrden(inDto.getIdDespacho(), 3);
+            }
             return 1;
         } else {
             return 0;
@@ -260,6 +267,21 @@ public class DespachoServiceImpl implements DespachoService{
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
         return query;
+    }
+
+    private Integer actualizarOrden(Integer idDespacho, Integer valor){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_orden_recojo ");
+        sql.append("SET id_estado_orden = :valor ");
+        sql.append("WHERE id_orden_recojo in (SELECT id_orden_recojo FROM sd_despacho WHERE id_despacho = :idDespacho) ");
+        parameters.put("valor", valor);
+        parameters.put("idDespacho", idDespacho);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+        int rowsUpdated = query.executeUpdate();
+        return rowsUpdated;
     }
 
     @Override
@@ -308,6 +330,68 @@ public class DespachoServiceImpl implements DespachoService{
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);
 
+        return query;
+    }
+
+    @Override
+    public Date registrarSalidaDespacho(SalidaDespachoInDto inDto)  throws ParseException{
+        Integer comprobarPlanta = consultarQrSalidaPlanta(inDto.getIdPlanta(), inDto.getQrSalida());
+        if(comprobarPlanta != null){
+            Query queryEstadoPesaje = actualizarHoraSalida(inDto.getIdDespacho());
+            int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
+            if(filasActualizadasEstado > 0){
+                Query queryHoraSalida = consultarHoraSalida(inDto.getIdDespacho());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    return sdf.parse(QueryUtils.getAsString((Date) queryHoraSalida.getSingleResult()));
+                } catch (ParseException e){
+                    System.out.println(e);
+                }
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private Integer consultarQrSalidaPlanta(Integer idPlanta, String qrSalida){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT activo ");
+        sql.append("FROM sd_planta ");
+        sql.append("WHERE id_planta = :idPlanta AND qr_salida = :qrSalida ");
+        parameters.put("idPlanta", idPlanta);
+        parameters.put("qrSalida", qrSalida);
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+        try {
+            return QueryUtils.getAsInteger(query.getSingleResult());
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    private Query actualizarHoraSalida(Integer idDespacho){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        sql.append("UPDATE sd_despacho ");
+        sql.append("SET hora_fin_despacho = sysdate() ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idDespacho", idDespacho);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    private Query consultarHoraSalida(Integer idDespacho){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT hora_fin_despacho ");
+        sql.append("FROM sd_despacho ");
+        sql.append("WHERE id_despacho = :idDespacho ");
+        parameters.put("idDespacho", idDespacho);
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
         return query;
     }
 }

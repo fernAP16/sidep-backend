@@ -1,6 +1,7 @@
 package com.sidep.proyect.backend.controller;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sidep.proyect.backend.dto.in.DespachoActualizarEstadoInDto;
 import com.sidep.proyect.backend.dto.in.DespachoNuevoPesajeInDto;
 import com.sidep.proyect.backend.dto.in.DespachoRegisterInDto;
+import com.sidep.proyect.backend.dto.in.SalidaDespachoInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoRegisterOutDto;
 import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.repository.DespachoRepository;
+import com.sidep.proyect.backend.repository.PlantaRepository;
 import com.sidep.proyect.backend.service.DespachoService;
 
 
@@ -32,6 +35,9 @@ public class DespachoController {
 
     @Autowired
     private DespachoRepository despachoRepository;
+
+    @Autowired
+    private PlantaRepository plantaRepository;
 
     @PostMapping("/registrar")
     public DespachoRegisterOutDto registrarDespacho(@RequestBody DespachoRegisterInDto inDto) throws ParseException {
@@ -61,6 +67,11 @@ public class DespachoController {
     @PostMapping("/agregarPesaje")
     public Integer actualizarValorPesaje(@RequestBody DespachoNuevoPesajeInDto inDto) {
         return despachoService.actualizarValorPesaje(inDto);
+    }
+
+    @PostMapping("/salida")
+    public Date registrarSalidaDespacho(@RequestBody SalidaDespachoInDto inDto) throws ParseException{
+        return despachoService.registrarSalidaDespacho(inDto);
     }
     
 }
