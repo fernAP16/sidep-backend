@@ -19,9 +19,9 @@ import com.sidep.proyect.backend.dto.in.SalidaDespachoInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoRegisterOutDto;
+import com.sidep.proyect.backend.dto.out.DespachoTerminadoOutDto;
 import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.repository.DespachoRepository;
-import com.sidep.proyect.backend.repository.PlantaRepository;
 import com.sidep.proyect.backend.service.DespachoService;
 
 
@@ -35,9 +35,6 @@ public class DespachoController {
 
     @Autowired
     private DespachoRepository despachoRepository;
-
-    @Autowired
-    private PlantaRepository plantaRepository;
 
     @PostMapping("/registrar")
     public DespachoRegisterOutDto registrarDespacho(@RequestBody DespachoRegisterInDto inDto) throws ParseException {
@@ -57,6 +54,11 @@ public class DespachoController {
     @PostMapping("/orden/{idOrden}")
     public DespachoPorOrdenOutDto obtenerUltimoDespachoPorOden(@PathVariable Integer idOrden) {
         return despachoService.obtenerUltimoDespachoPorOrden(idOrden);
+    }
+
+    @PostMapping("/ordenTerminada/{idOrden}")
+    public DespachoTerminadoOutDto obtenerDatosDespachoTerminado(@PathVariable Integer idOrden) throws ParseException {
+        return despachoService.obtenerDatosDespachoTerminado(idOrden);
     }
 
     @PostMapping("/nuevoEstado")

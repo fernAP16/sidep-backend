@@ -17,6 +17,7 @@ import com.sidep.proyect.backend.dto.in.SalidaDespachoInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoRegisterOutDto;
+import com.sidep.proyect.backend.dto.out.DespachoTerminadoOutDto;
 import com.sidep.proyect.backend.model.Auditoria;
 import com.sidep.proyect.backend.model.Despacho;
 import com.sidep.proyect.backend.model.EstadoDespacho;
@@ -39,42 +40,58 @@ public class DespachoServiceImpl implements DespachoService{
     private CrudService crudService ;
 
     @Override
-    public DespachoRegisterOutDto registrarDespacho (DespachoRegisterInDto inDto) throws ParseException{
+    public DespachoRegisterOutDto registrarDespacho(DespachoRegisterInDto inDto) throws ParseException {
         DespachoRegisterOutDto outDto = new DespachoRegisterOutDto();
         Query query = obtenerDatosValidacion(inDto);
         List<Object[]> resultList = query.getResultList();
+        
+        if (resultList.isEmpty()) {
+            outDto.setErrorMessage("+No se encontraron datos de validación");
+            return outDto;
+        }
+        
         Object[] item = resultList.get(0);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try{
+
+        Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
+        List<Object> plantas = queryPlanta.getResultList();
+        
+        if (plantas.isEmpty()) {
+            outDto.setErrorMessage("+No se encuentra cerca a la planta de despacho");
+            return outDto;
+        }
+        
+        Object itemPlanta = plantas.get(0);
+        Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
+        
+        if (idPlanta == null) {
+            outDto.setErrorMessage("+No se encuentra cerca a la planta de despacho");
+            return outDto;
+        }
+        
+        outDto.setIdPlanta(idPlanta);
+
+        try {
             outDto.setFechaVencLicencia(sdf.parse(QueryUtils.getAsString(item[0])));
             outDto.setFechaVencCircTracto(sdf.parse(QueryUtils.getAsString(item[1])));
             outDto.setTieneTarjPropiedadTracto(QueryUtils.getAsInteger(item[2]));
             outDto.setFechaVencSoatTracto(sdf.parse(QueryUtils.getAsString((Date)item[3])));
             outDto.setFechaVencCircCarreta(sdf.parse(QueryUtils.getAsString((Date)item[4])));
             outDto.setTieneTarjPropiedadCarreta(QueryUtils.getAsInteger(item[5]));
-        } catch (ParseException e){
+        } catch (ParseException e) {
             System.out.println(e);
         }
 
         outDto.setErrorMessage(obtenerMensajeError(outDto));
-        
-        if(outDto.getErrorMessage().equals("")){
-            // Obtenemos la planta
-            Query queryPlanta = obtenerPlanta(inDto.getX(), inDto.getY());
-            Object itemPlanta = queryPlanta.getSingleResult();
-            Integer idPlanta = QueryUtils.getAsInteger(itemPlanta);
-            if(idPlanta == null){
-                outDto.setErrorMessage("+No se encuentra cerca a la planta de despacho");
-                return outDto;
-            } 
-            outDto.setIdPlanta(idPlanta);
+
+        if (outDto.getErrorMessage().isEmpty()) {
             // Registrar despacho
             Integer idDespacho = registrarNuevoDespacho(inDto.getIdOrden(), idPlanta);
             outDto.setIdDespacho(idDespacho);
             // Actualizar el estado de la orden a "Despachando"
             Query queryOrden = actualizarOrden(inDto.getIdOrden());
             int filasActualizadas = queryOrden.executeUpdate();
-            if(filasActualizadas > 0){
+            if (filasActualizadas > 0) {
                 System.out.println("Se actualizaron " + filasActualizadas + " filas.");
             } else {
                 System.out.println("No se realizaron actualizaciones.");
@@ -83,7 +100,7 @@ public class DespachoServiceImpl implements DespachoService{
         return outDto;
     }
 
-    private Query obtenerDatosValidacion(DespachoRegisterInDto inDto){
+    private Query obtenerDatosValidacion(DespachoRegisterInDto inDto) {
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
         sql.append("SELECT co.fecha_venc_licencia, "); // 0
@@ -103,31 +120,31 @@ public class DespachoServiceImpl implements DespachoService{
         return query;
     }
 
-    private String obtenerMensajeError(DespachoRegisterOutDto outDto){
+    private String obtenerMensajeError(DespachoRegisterOutDto outDto) {
         Date today = new Date();
         String message = "";
-        if(today.compareTo(outDto.getFechaVencLicencia()) >= 0){
+        if (today.compareTo(outDto.getFechaVencLicencia()) >= 0) {
             message += "+Licencia de conducir vencido";
         }
-        if (today.compareTo(outDto.getFechaVencCircTracto()) >= 0){
+        if (today.compareTo(outDto.getFechaVencCircTracto()) >= 0) {
             message += "+Tarjeta de circulación del tracto vencida";
         }
-        if (outDto.getTieneTarjPropiedadTracto() == 0){
+        if (outDto.getTieneTarjPropiedadTracto() == 0) {
             message += "+Tarjeta de propiedad del tracto no registrada";
         }
-        if (today.compareTo(outDto.getFechaVencSoatTracto()) >= 0){
+        if (today.compareTo(outDto.getFechaVencSoatTracto()) >= 0) {
             message += "+No renovó su SOAT\n";
         }
-        if (today.compareTo(outDto.getFechaVencCircCarreta()) >= 0){
+        if (today.compareTo(outDto.getFechaVencCircCarreta()) >= 0) {
             message += "+Tarjeta de circulación de la carreta vencida";
         }
-        if (outDto.getTieneTarjPropiedadCarreta() == 0){
+        if (outDto.getTieneTarjPropiedadCarreta() == 0) {
             message += "+Tarjeta de propiedad de la carreta no registrada";
-        } 
+        }
         return message;
     }
 
-    private Query obtenerPlanta(Double x, Double y){
+    private Query obtenerPlanta(Double x, Double y) {
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
 
@@ -142,6 +159,7 @@ public class DespachoServiceImpl implements DespachoService{
 
         return query;
     }
+
 
     private Integer registrarNuevoDespacho (Integer idOrden, Integer idPlanta){
         Despacho despacho = new Despacho();
@@ -229,6 +247,45 @@ public class DespachoServiceImpl implements DespachoService{
         sql.append("SELECT MAX(id_despacho) as id_despacho ");
         sql.append("FROM sd_despacho ");
         sql.append("WHERE id_orden_recojo = :idOrden ");
+        parameters.put("idOrden", idOrden);
+
+        Query query = crudService.createNativeQuery(sql.toString(), parameters);
+
+        return query;
+    }
+
+    @Override
+    public DespachoTerminadoOutDto obtenerDatosDespachoTerminado(Integer idOrden) throws ParseException {
+        DespachoTerminadoOutDto outDto = new DespachoTerminadoOutDto();
+        SimpleDateFormat sdfFecha = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdfHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Query query = consultarDatosDespachoTerminado(idOrden);
+        List<Object[]> resultList = query.getResultList();
+        
+        if (resultList.isEmpty()) {
+            return outDto;
+        }
+        
+        Object[] item = resultList.get(0);
+
+        try {
+            outDto.setFechaRecojo(sdfFecha.parse(QueryUtils.getAsString(item[0])));
+            outDto.setHoraLlegada(sdfHora.parse(QueryUtils.getAsString(item[0])));
+            outDto.setHoraSalida(sdfHora.parse(QueryUtils.getAsString(item[1])));
+        } catch (ParseException e) {
+            System.out.println(e);
+        }
+
+        return outDto;
+    }
+
+    private Query consultarDatosDespachoTerminado(Integer idOrden){
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        sql.append("SELECT hora_inicio_despacho, hora_fin_despacho ");
+        sql.append("FROM sd_despacho ");
+        sql.append("WHERE id_orden_recojo = :idOrden ");
+        sql.append("ORDER BY id_despacho DESC; ");
         parameters.put("idOrden", idOrden);
 
         Query query = crudService.createNativeQuery(sql.toString(), parameters);

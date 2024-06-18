@@ -72,7 +72,7 @@ public class LoginImpl implements LoginService{
         Optional<ZonaBalanza> balanzaLogin = zonaBalanzaRepository.findBalanzaToLogin(inDto.getUsername(), inDto.getPassword());
         if(balanzaLogin.isPresent()){
             String nombres = balanzaLogin.get().getCodigo();
-            return new LoginOutDto("Login Success", true, balanzaLogin.get().getIdZonaBalanza(), nombres);
+            return new LoginOutDto("Login Success", true, balanzaLogin.get().getIdZonaBalanza(), nombres + "/" + balanzaLogin.get().getTipoPesaje().getIdTipoPesaje());
             
         } else {
             return new LoginOutDto("Login Failed", false, 0, "");

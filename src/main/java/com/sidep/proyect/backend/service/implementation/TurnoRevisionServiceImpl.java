@@ -277,6 +277,7 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
     @Override
     public Integer registrarIncidencias(TurnoRevisionIncidenciaInDto inDto){
         // Registrar incidencias
+        System.out.println(inDto.toString());
         for (Integer id : inDto.getIdIncidencias()) {
             TurnoIncidencia turnoIncidencia = new TurnoIncidencia();
             turnoIncidencia.setIncidencia(new Incidencia());
@@ -287,6 +288,7 @@ public class TurnoRevisionServiceImpl implements TurnoRevisionService{
             turnoIncidencia.getAuditoria().setActivo(1);
             turnoIncidencia.getAuditoria().setFechaRegistro(new Date());
             turnoIncidencia.getAuditoria().setUsuarioRegistro("usuario");
+            System.out.println(turnoIncidencia);
             crudService.create(turnoIncidencia);
             if(turnoIncidencia.getIdTurnoIncidencia() == null || turnoIncidencia.getIdTurnoIncidencia() == 0){
                 return 0;

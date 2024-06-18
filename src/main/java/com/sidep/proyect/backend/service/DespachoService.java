@@ -12,6 +12,7 @@ import com.sidep.proyect.backend.dto.in.SalidaDespachoInDto;
 import com.sidep.proyect.backend.dto.out.DespachoObtenerVigenteOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoPorOrdenOutDto;
 import com.sidep.proyect.backend.dto.out.DespachoRegisterOutDto;
+import com.sidep.proyect.backend.dto.out.DespachoTerminadoOutDto;
 
 @Service
 public interface DespachoService {
@@ -21,6 +22,8 @@ public interface DespachoService {
     public DespachoObtenerVigenteOutDto obtenerDespachoVigentePorConductor(Integer idConductor);
 
     public DespachoPorOrdenOutDto obtenerUltimoDespachoPorOrden(Integer idOrden);
+
+    public DespachoTerminadoOutDto obtenerDatosDespachoTerminado(Integer idOrden)  throws ParseException ;
 
     public Integer actualizarEstadoDespacho(DespachoActualizarEstadoInDto inDto);
 

@@ -220,6 +220,8 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
             return ((BigDecimal) result).doubleValue();
         } else if (result instanceof Double) {
             return (Double) result;
+        } else if (result instanceof Integer) {
+            return (Double) ((Integer) result).doubleValue();
         } else {
             throw new IllegalArgumentException("Unexpected result type: " + result.getClass().getName());
         }
@@ -232,7 +234,7 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
         sql.append("SELECT pv.peso_unidad ");
         sql.append("FROM sd_despacho dp ");
         sql.append("INNER JOIN sd_orden_recojo oc ON oc.id_orden_recojo = dp.id_orden_recojo ");
-        sql.append("INNER JOIN sd_producto_venta pv ON pv.id_producto_venta = oc.id_carreta ");
+        sql.append("INNER JOIN sd_producto_venta pv ON pv.id_producto_venta = oc.id_producto_venta ");
         sql.append("WHERE dp.id_despacho = :idDespacho ");
         parameters.put("idDespacho", idDespacho);
 
@@ -284,6 +286,8 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
             return ((BigDecimal) result).doubleValue();
         } else if (result instanceof Double) {
             return (Double) result;
+        } else if (result instanceof Integer) {
+            return (Double) ((Integer) result).doubleValue();
         } else {
             throw new IllegalArgumentException("Unexpected result type: " + result.getClass().getName());
         }
@@ -310,6 +314,8 @@ public class ColaPesajeServiceImpl implements ColaPesajeService{
             return ((BigDecimal) result).doubleValue();
         } else if (result instanceof Double) {
             return (Double) result;
+        } else if (result instanceof Integer) {
+            return (Double) ((Integer) result).doubleValue();
         } else {
             throw new IllegalArgumentException("Unexpected result type: " + result.getClass().getName());
         }
