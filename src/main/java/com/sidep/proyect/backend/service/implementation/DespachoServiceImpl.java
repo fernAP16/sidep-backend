@@ -398,7 +398,7 @@ public class DespachoServiceImpl implements DespachoService{
             int filasActualizadasEstado = queryEstadoPesaje.executeUpdate();
             if(filasActualizadasEstado > 0){
                 Query queryHoraSalida = consultarHoraSalida(inDto.getIdDespacho());
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
                     return sdf.parse(QueryUtils.getAsString((Date) queryHoraSalida.getSingleResult()));
                 } catch (ParseException e){
